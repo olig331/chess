@@ -11,4 +11,10 @@ export class Knight extends Piece {
         this.vectors = vectors;
         this.renderImage = renderImage;
     }
+
+    public getLegalMoves = (coords: coords): any => {};
+
+    public getName = (): string => {
+        return "knight";
+    };
 }
