@@ -1,0 +1,197 @@
+$blacksqaure: radial-gradient(
+    circle,
+    rgba(78, 90, 101, 1) 0%,
+    rgba(65, 75, 84, 1) 100%
+);
+
+// Color of the lighter board sqaures
+$whitesqare: radial-gradient(
+    circle,
+    rgba(111, 128, 144, 1) 0%,
+    rgba(100, 115, 129, 1) 100%
+);
+
+.board_wrapper {
+    //border: 30px solid burlywood;
+    filter: drop-shadow(1px 1px 45px #999);
+    border-radius: 10px;
+    .row {
+        display: flex;
+    }
+
+    .node {
+        //border: 1px solid rgba(209, 209, 209, 0.452);
+        width: 100px;
+        height: 100px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        position: relative;
+        transition: 0.15s linear;
+
+        p {
+            font-size: 14px;
+            color: #d6b0ff;
+        }
+
+        &:after {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 1;
+        }
+        &:hover::after {
+            background: #01858573;
+            z-index: 1;
+        }
+        &:hover {
+            cursor: pointer;
+        }
+        .piece {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4.2rem;
+            z-index: 100;
+            pointer-events: none;
+            //transition: 0.15s linear;
+            svg {
+                pointer-events: none;
+                //transition: 0.15s linear;
+            }
+        }
+    }
+    // Map the rows
+    @for $col from 1 through 9 {
+        div:nth-child(#{$col}) {
+            // for each div in the row
+            @for $row from 1 through 9 {
+                div:nth-child(#{$row}) {
+                    @if ($col % 2 == 0) {
+                        @if ($row % 2 == 0) {
+                            background: rgb(224, 224, 224);
+                            background: $whitesqare;
+                        } @else {
+                            background: rgb(34, 34, 34);
+                            background: $blacksqaure;
+                        }
+                    } @else {
+                        @if ($row % 2 == 1) {
+                            background: rgb(224, 224, 224);
+                            background: $whitesqare;
+                        } @else {
+                            background: rgb(34, 34, 34);
+                            background: $blacksqaure;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.highlight {
+    &:before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 20px;
+        height: 20px;
+        background: #00b1b148;
+        border: 2px solid rgba(255, 255, 255, 0.453);
+        border-radius: 50%;
+        z-index: 10001;
+    }
+}
+
+.moved {
+    &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(97, 179, 97, 0.356);
+        z-index: 10;
+    }
+}
+
+.checked {
+    &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(236, 59, 59, 0.863);
+        z-index: 10;
+    }
+}
+
+.waiting_for_player_wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    h3 {
+        color: #333;
+    }
+
+    .lds-ripple {
+        display: inline-block;
+        position: relative;
+        width: 60px;
+        height: 60px;
+        div {
+            position: absolute;
+            border: 4px solid #00b1b1;
+            opacity: 1;
+            border-radius: 50%;
+            animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+        }
+        div:nth-child(2) {
+            animation-delay: -0.5s;
+        }
+    }
+}
+
+@keyframes lds-ripple {
+    0% {
+        top: 36px;
+        left: 36px;
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+    100% {
+        top: 0px;
+        left: 0px;
+        width: 72px;
+        height: 72px;
+        opacity: 0;
+    }
+}
+
+@media screen and (max-width: 1400px) {
+    .node {
+        width: 80px !important;
+        height: 80px !important;
+        .piece {
+            font-size: 3.8rem !important;
+        }
+    }
+}
+
+.selected {
+    border: 3px solid #00b1b1 !important; // Fix this
+}
