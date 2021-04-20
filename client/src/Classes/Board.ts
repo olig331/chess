@@ -6,7 +6,7 @@ export class Board {
     public board: Node[][];
     private static kingCheckVectors = [...getVectors("n"), ...getVectors("k")];
     private static startingPositions: string =
-        "rnbqkbnrpppppppp................................PPPPPPPPRNBQKBNR";
+        "rnbqkbnrpp..pppp................................PP..PPPPRNBQKBNR";
 
     constructor() {
         this.board = this.initBoard();
@@ -32,73 +32,104 @@ export class Board {
         return result;
     };
     //prettier-ignore
-    public verifyAttemptedMove = (selected: any, newPos: any):Node[][] | null => {
-        let oldCoords = selected.getCoords(),
-            newCoords = newPos.getCoords(),
-            derivedVector = {
-                y: newCoords.y - oldCoords.y,
-                x: newCoords.x - oldCoords.x,
-            },
-            vectorsMatch: boolean = false;
-        //prettier-ignore
-        for(let i:number = 0; i < selected.data.vectors.length; i++){
-            console.log("in for loop")
-            console.log("vectorCheck",Board.vectorEqualityCheck(derivedVector, selected.data.vectors[i]));
-            if(Board.vectorEqualityCheck(derivedVector, selected.data.vectors[i])){
-                vectorsMatch = true;
-                break;
-            }
-        }
-
-        if (vectorsMatch) {
-            //prettier-ignore
-            if(selected.getColor() === newPos.getColor() || newPos.getName() === "king"){
-                console.log("vector was a match but sqaure is un availble")
-                return null;   
-            }
-            //Check if the move will result in the king being in check
-            if(this.isKingChecked({y:7,x:4}, selected.getColor())){
-
-            }
-            this.updateTheBoard(selected, newPos);
-            return this.board;
-        }
-        return null;
-    };
 
     public isKingChecked = (kingsPos: coords, color: string): boolean => {
         let i: number;
 
         for (i = 0; i < Board.kingCheckVectors.length; i++) {
+            console.log(kingsPos, Board.kingCheckVectors[i]);
             let posY = kingsPos.y + Board.kingCheckVectors[i].y,
-                posX = kingsPos.x + Board.kingCheckVectors[i].x,
-                tempNode = this.board[posY][posX];
-            //prettier-ignore
-            if(i < 8){ // Checking knights
-                if(tempNode.getName() === "knight" && tempNode.getColor() !== color){
-                    return true;// king is in check 
-                }
-            }
-            //prettier-ignore
-            if (i > 7 && i < 12) { // checking diagonals
-                while(Board.validCoords(posY) && Board.validCoords(posX)){ // checking the new board coords are valid
+                posX = kingsPos.x + Board.kingCheckVectors[i].x;
 
+            if (Board.validCoords(posY) && Board.validCoords(posX)) {
+                let tempNode = this.board[posY][posX];
+                //prettier-ignore
+                if(i < 8){ // Checking knights
+                    if(tempNode.getName() === "knight" && tempNode.getColor() !== color){
+                        console.log("knight")
+                        return true;// king is in check 
+                    }
+                }
+                //prettier-ignore
+                if (i > 7 && i < 12) { // checking diagonals
+                    while(Board.validCoords(posY) && Board.validCoords(posX)){ // checking the new board coords are valid
+                        tempNode = this.board[posY][posX];
+                        let nodeName = tempNode.getName(),
+                            loopCount = 0;
+                        if(tempNode.data){
+                            if(tempNode.getColor() === color){break}
+                            if(loopCount < 1){ // check for pawns and king
+                                if(i < 10 && color === "white"){ // check for white pawns 
+                                    //prettier-ignore
+                                    if(nodeName === "pawn" || nodeName === "king" || nodeName === "queen" || nodeName ==="bishop"){console.log("pawn white 1");return true;}
+                                    if(nodeName === "king" || nodeName === "bishop" || nodeName ==="queen"){ console.log("pawn white 2");return true;}
+                                }
+                                if(i > 9 && color === "black"){
+                                    //prettier-ignore
+                                    if(tempNode.getColor() !== color){
+                                        if(nodeName === "pawn" || nodeName === "king" || nodeName === "queen" || nodeName ==="bishop"){console.log("pawn black 1");return true;}
+                                        if(nodeName === "king" || nodeName === "bishop" || nodeName ==="queen"){console.log("pawn black 2");return true}
+                                    }
+                                }
+                                if(tempNode.getColor() !== color){
+                                    if(nodeName === "king" || nodeName === "queen" || nodeName=== "bishop"){console.log("last loop count diag");return true}
+                                }
+                            }
+                        
+                            if (nodeName === "queen" || nodeName === "rook") {
+                                console.log("queen rook")
+                                return true;
+                            }
+                            break;
+                        }
+                        loopCount++
+                        posY += Board.kingCheckVectors[i].y
+                        posX += Board.kingCheckVectors[i].x
+                    }
+                }
+
+                if (i > 11) {
+                    while (Board.validCoords(posY) && Board.validCoords(posX)) {
+                        tempNode = this.board[posY][posX];
+                        let nodeName = tempNode.getName(),
+                            loopCount = 0;
+
+                        if (tempNode.data) {
+                            if (tempNode.getColor() === color) {
+                                break;
+                            }
+                            if (loopCount < 1) {
+                                //prettier-ignore
+                                if(tempNode.getColor() !== color){
+                                    if(nodeName === "king" || nodeName ==="rook" || nodeName ==="rook"){
+                                        console.log(tempNode, nodeName, color, i, loopCount)
+                                        console.log("king i > 11")
+                                        return true;
+                                    }
+                                }
+                            }
+
+                            if (nodeName === "queen" || nodeName === "rook") {
+                                console.log("queen or rook");
+                                return true;
+                            }
+                            break;
+                        }
+
+                        loopCount++;
+                        posY += Board.kingCheckVectors[i].y;
+                        posX += Board.kingCheckVectors[i].x;
+                    }
                 }
             }
         }
+        console.log("not checked");
         return false;
     };
 
     public updateTheBoard = (old: Node, newPos: Node) => {
         this.board[newPos.y][newPos.x].data = old.data;
         this.board[old.y][old.x].data = null;
-    };
-
-    private static vectorEqualityCheck = (a: coords, b: coords) => {
-        if (JSON.stringify(a) === JSON.stringify(b)) {
-            return true;
-        }
-        return false;
     };
 
     private static validCoords = (val: number): boolean => {
@@ -138,9 +169,13 @@ class Node {
         return this.data ? this.data.color : "";
     };
 
-    public getPiecesMoves = () => {
-        if (this.data) {
-            this.data.getLegalMoves(this.getCoords());
-        }
+    // public getPiecesMoves = () => {
+    //     if (this.data) {
+    //         this.data.getLegalMoves(this.getCoords());
+    //     }
+    // };
+
+    public getPiecesMoves = (board: any[][]): coords[] => {
+        return this.data.getLegalMoves({ y: this.y, x: this.x }, board);
     };
 }

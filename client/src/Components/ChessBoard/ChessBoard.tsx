@@ -15,6 +15,11 @@ export const ChessBoard: React.FC<PassedProps> = () => {
     }, [selected])
 
     const handleMoveing = (col: any) => {
+        console.log("handle moving")
+        if (!col.data) {
+            console.log("returning")
+            return;
+        }
         let newData: BoardNode[][] | null = board.verifyAttemptedMove(selected, col);
         setSelected(null)
         if (newData) {

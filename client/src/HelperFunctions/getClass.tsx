@@ -12,8 +12,6 @@ import { FaChessPawn, FaChessRook, FaChessQueen, FaChessKing, FaChessKnight, FaC
 export const getClass = (tag: string): Piece | null => {
     let color = tag.charCodeAt(0) < 91 ? "white" : "black",
         lowerCaseTag: string = tag.toLowerCase();
-    console.log(color, tag.charCodeAt(0))
-
 
     switch (lowerCaseTag) {
         case "p":

@@ -12,12 +12,26 @@ export class GameInstance extends React.Component {
         selected: null
     }
 
+    public highlightMovesSquares = (moves: coords[]) => {
+        moves && moves.map((move: coords) => {
+            return document.getElementsByClassName(`node ${move.y}-${move.x}`)[0].className =
+                `node ${move.y}-${move.x} highlight`
+        })
+    }
+
     public setSelected = (toSelect: any) => {
+        console.log("toSelect", toSelect)
+        if (!toSelect.data) {
+            return;
+        }
         this.setState({
             selected: toSelect
         }, () => {
-            console.log("cb after setting seletted", this.state.selected)
+            console.log("cb after setting seletted", this.state.selected);
+            let moves = toSelect.getPiecesMoves(this.state.board.board);
+            this.highlightMovesSquares(moves)
         })
+        return;
     }
 
     public setBoard = (newBoard: BoardNode[][]) => {

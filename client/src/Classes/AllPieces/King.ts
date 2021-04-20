@@ -12,7 +12,27 @@ export class King extends Piece {
         this.renderImage = renderImage;
     }
 
-    public getLegalMoves = (coords: coords): any => {};
+    public getLegalMoves = (coords: coords, board: any[][]): coords[] => {
+        let i: number,
+            result: coords[] = [];
+
+        for (i = 0; i < this.vectors.length; i++) {
+            let y: number = coords.y + this.vectors[i].y,
+                x: number = coords.x + this.vectors[i].x;
+
+            if (this.inRange(y) && this.inRange(x)) {
+                const newSq = board[y][x];
+                const name = newSq.getName();
+
+                if (newSq.getColor() === this.color) {
+                    continue;
+                } else {
+                    result.push({ y: y, x: x });
+                }
+            }
+        }
+        return result;
+    };
 
     public getName = (): string => {
         return "king";
