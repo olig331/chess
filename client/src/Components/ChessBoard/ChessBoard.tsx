@@ -2,28 +2,27 @@ import React, { useContext, useEffect } from 'react'
 import { SelectedContext, BoardContext } from '../GameInstance/GameInstance'
 
 interface PassedProps {
-    board: any
+    removeHighlights: () => void
 }
 
-export const ChessBoard: React.FC<PassedProps> = () => {
+export const ChessBoard: React.FC<PassedProps> = ({ removeHighlights }) => {
 
     const { selected, setSelected } = useContext(SelectedContext)
     const { board, setBoard } = useContext(BoardContext);
 
     useEffect(() => {
-        console.log("this is selected", selected)
+        console.log("selected useEffect", selected)
     }, [selected])
 
     const handleMoveing = (col: any) => {
         console.log("handle moving")
-        if (!col.data) {
-            console.log("returning")
-            return;
-        }
-        let newData: BoardNode[][] | null = board.verifyAttemptedMove(selected, col);
-        setSelected(null)
+
+        let newData: BoardNode[][] | null = board.applyMove(selected, col);
+        //setSelected(null)
         if (newData) {
             setBoard(newData);
+            setSelected(null);
+            removeHighlights();
         }
     }
 
@@ -35,7 +34,7 @@ export const ChessBoard: React.FC<PassedProps> = () => {
                         <div
                             key={`${rowIndex}${colIndex}`}
                             className={`node ${rowIndex}-${colIndex}`}
-                            onClick={() => selected ? handleMoveing(col) : setSelected(col)}
+                            onClick={() => selected !== null ? handleMoveing(col) : setSelected(col)}
                         >
                             <span className="piece" style={{ color: col.data && col.data.color }}>{col.data && col.data.renderImage}</span>
                         </div>

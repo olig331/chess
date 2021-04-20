@@ -4,12 +4,13 @@ export class Queen extends Piece {
     public color: string;
     public vectors: vectorsArr;
     public renderImage: any;
-
+    public name: string;
     constructor(color: string, vectors: vectorsArr, renderImage: any) {
         super();
         this.color = color;
         this.vectors = vectors;
         this.renderImage = renderImage;
+        this.name = this.getName();
     }
 
     public getLegalMoves = (coords: coords, board: any[][]): coords[] => {
@@ -39,6 +40,7 @@ export class Queen extends Piece {
                 x += this.vectors[i].x;
             }
         }
+        this.moves = result;
         return result;
     };
 

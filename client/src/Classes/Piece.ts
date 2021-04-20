@@ -1,7 +1,9 @@
 export abstract class Piece {
-    public oppoClr: {[key:string]: string}
-    constructor(){
-        this.oppoClr = {"white": "black", "black": "white"}
+    public oppoClr: { [key: string]: string };
+    public moves: coords[];
+    constructor() {
+        this.oppoClr = { white: "black", black: "white" };
+        this.moves = [];
     }
 
     private static abstractErrorMsg: string =

@@ -16,23 +16,33 @@ export class GameInstance extends React.Component {
         moves && moves.map((move: coords) => {
             return document.getElementsByClassName(`node ${move.y}-${move.x}`)[0].className =
                 `node ${move.y}-${move.x} highlight`
-        })
-    }
+        });
+    };
 
-    public setSelected = (toSelect: any) => {
-        console.log("toSelect", toSelect)
-        if (!toSelect.data) {
-            return;
+    public removeHighlights = () => {
+        document.querySelectorAll(".highlight").forEach((ele: any) => {
+            let newClass: string = ele.className.replace(/\shighlight/, "");
+            return ele.className = newClass;
+        });
+    };
+
+    public setSelected = (toSelect: any, copy: any) => {
+        console.log("setSelected called", toSelect)
+        if (toSelect === null || toSelect.data === null) {
+            this.setState({
+                selected: null
+            })
+            return
         }
+
+        let moves = toSelect.getPiecesMoves(this.state.board);
         this.setState({
             selected: toSelect
         }, () => {
-            console.log("cb after setting seletted", this.state.selected);
-            let moves = toSelect.getPiecesMoves(this.state.board.board);
             this.highlightMovesSquares(moves)
-        })
+        });
         return;
-    }
+    };
 
     public setBoard = (newBoard: BoardNode[][]) => {
         let copy = this.state.board;
@@ -52,13 +62,12 @@ export class GameInstance extends React.Component {
         const board = this.state.board;
         const { setBoard } = this;
 
-
         return (
             <>
                 <BoardContext.Provider value={{ board, setBoard }}>
                     <SelectedContext.Provider value={{ selected, setSelected }}>
                         <ChessBoard
-                            board={this.state.board.board}
+                            removeHighlights={this.removeHighlights}
                         />
                     </SelectedContext.Provider>
                 </BoardContext.Provider>

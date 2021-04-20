@@ -6,7 +6,7 @@ export class Pawn extends Piece {
     public renderImage: any;
     public startingRank: number;
     public endRank: number;
-
+    public name: string;
     constructor(color: string, vectors: vectorsArr, renderImage: any) {
         super();
         this.color = color;
@@ -14,6 +14,7 @@ export class Pawn extends Piece {
         this.renderImage = renderImage;
         this.startingRank = color === "white" ? 6 : 1;
         this.endRank = color === "white" ? 0 : 7;
+        this.name = this.getName();
     }
 
     public getLegalMoves = (coords: coords, board: any[]): coords[] => {
@@ -44,6 +45,7 @@ export class Pawn extends Piece {
                 }
             }
         }
+        this.moves = result;
         return result;
     };
 

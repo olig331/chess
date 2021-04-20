@@ -22,7 +22,6 @@ export class King extends Piece {
 
             if (this.inRange(y) && this.inRange(x)) {
                 const newSq = board[y][x];
-                const name = newSq.getName();
 
                 if (newSq.getColor() === this.color) {
                     continue;
@@ -31,6 +30,7 @@ export class King extends Piece {
                 }
             }
         }
+        this.moves = result;
         return result;
     };
 
