@@ -3,18 +3,32 @@ import { Board } from '../../Classes/Board';
 import { Player } from '../../Classes/Player';
 import { ChessBoard } from '../ChessBoard/ChessBoard';
 import { highlightMovesSquares } from '../../HelperFunctions/highlightFunctions';
+const socket = require('../../SocketConnection/Socket').socket;
 
 const SelectedContext: any = React.createContext<any>(null)
 const BoardContext: any = React.createContext(null)
+const PlayerContext: any = React.createContext(null);
 
-export class GameInstance extends React.Component {
+interface PassedProps {
+    match: any
+}
+
+export class GameInstance extends React.Component<PassedProps> {
 
     state: GameState = {
+        lobbyId: this.props.match.params.lobbyId,
         board: new Board(),
         selected: null,
         player: null
     }
 
+    componentDidMount() {
+        socket.emit("joinedLobby", this.state.lobbyId);
+        socket.on("getMatchData", (payload: { oppoId: string, color: string }) => {
+            console.log("match data recieved", payload)
+            this.setState({ player: new Player(payload.color, payload.oppoId) });
+        });
+    }
 
     public setSelected = (toSelect: any) => {
         if (toSelect === null || toSelect.data === null) {
@@ -44,12 +58,15 @@ export class GameInstance extends React.Component {
         const { setSelected } = this;
         const board = this.state.board;
         const { setBoard } = this;
+        const player = this.state.player
 
         return (
             <>
                 <BoardContext.Provider value={{ board, setBoard }}>
                     <SelectedContext.Provider value={{ selected, setSelected }}>
-                        <ChessBoard />
+                        <PlayerContext.Provider value={{ player }}>
+                            <ChessBoard />
+                        </PlayerContext.Provider>
                     </SelectedContext.Provider>
                 </BoardContext.Provider>
             </>
@@ -57,5 +74,5 @@ export class GameInstance extends React.Component {
     }
 }
 
-export { SelectedContext, BoardContext }
+export { SelectedContext, BoardContext, PlayerContext }
 

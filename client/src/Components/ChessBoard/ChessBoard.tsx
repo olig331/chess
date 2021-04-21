@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from 'react'
-import { SelectedContext, BoardContext } from '../GameInstance/GameInstance'
+import React, { useContext, useEffect, useState } from 'react'
+import { SelectedContext, BoardContext, PlayerContext } from '../GameInstance/GameInstance'
 import { removeHighlights } from '../../HelperFunctions/highlightFunctions';
 
 
@@ -7,14 +7,20 @@ export const ChessBoard: React.FC = () => {
 
     const { selected, setSelected } = useContext(SelectedContext)
     const { board, setBoard } = useContext(BoardContext);
+    const { player } = useContext(PlayerContext)
+    const [rotateDegree, set_rotateDegree] = useState<number>(0);
 
     useEffect(() => {
-        console.log("selected useEffect", selected)
-    }, [selected])
+        if (player) {
+            if (player.color === "black") {
+                set_rotateDegree(180)
+            }
+            return
+        }
+        return;
+    }, [player])
 
     const handleMoveing = (col: any) => {
-        console.log("handle moving")
-
         let newData: BoardNode[][] | null = board.applyMove(selected, col);
         //setSelected(null)
         if (newData) {
@@ -30,11 +36,16 @@ export const ChessBoard: React.FC = () => {
                 <div key={rowIndex} className={`row ${rowIndex}`}>
                     {row.map((col: any, colIndex: number) => (
                         <div
+                            style={{ transform: `rotate(${rotateDegree}deg)` }}
                             key={`${rowIndex}${colIndex}`}
                             className={`node ${rowIndex}-${colIndex}`}
                             onClick={() => selected !== null ? handleMoveing(col) : setSelected(col)}
                         >
-                            <span className="piece" style={{ color: col.data && col.data.color }}>{col.data && col.data.renderImage}</span>
+                            <span
+                                className="piece"
+                                style={{ color: col.data && col.data.color, transform: `rotate(${rotateDegree}deg)` }}>
+                                {col.data && col.data.renderImage}
+                            </span>
                         </div>
                     ))}
                 </div>

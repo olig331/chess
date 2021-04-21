@@ -6,6 +6,7 @@ type coords = {
 type vectorsArr = coords[];
 
 type GameState = {
+    lobbyId: string;
     board: Board;
     selected: any;
     player: Player;

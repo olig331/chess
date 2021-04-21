@@ -15,7 +15,7 @@ export class Player extends Game {
             color === "white"
                 ? { coords: { y: 7, x: 4 }, color: "white" }
                 : { coords: { y: 0, x: 4 }, color: "black" };
-        this.yourTurn = true;
+        this.yourTurn = color === "white" ? true : false;
         this.inCheck = false;
     }
 
