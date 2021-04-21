@@ -3,6 +3,7 @@ import { Board } from '../../Classes/Board';
 import { Player } from '../../Classes/Player';
 import { ChessBoard } from '../ChessBoard/ChessBoard';
 import { highlightMovesSquares } from '../../HelperFunctions/highlightFunctions';
+
 const socket = require('../../SocketConnection/Socket').socket;
 
 const SelectedContext: any = React.createContext<any>(null)
@@ -25,8 +26,12 @@ export class GameInstance extends React.Component<PassedProps> {
     componentDidMount() {
         socket.emit("joinedLobby", this.state.lobbyId);
         socket.on("getMatchData", (payload: { oppoId: string, color: string }) => {
-            console.log("match data recieved", payload)
+            console.log("get match data", payload)
             this.setState({ player: new Player(payload.color, payload.oppoId) });
+        });
+        socket.on("recieveMove", (data: any) => {
+            console.log("recieved move:", JSON.parse(data))
+            this.setBoard(this.state.board.updateTheBoard(JSON.parse(data)));
         });
     }
 

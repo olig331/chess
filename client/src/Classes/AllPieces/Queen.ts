@@ -1,4 +1,5 @@
 import { Piece } from "../Piece";
+import { getTag } from "../../HelperFunctions/getTag";
 
 export class Queen extends Piece {
     public color: string;
@@ -38,7 +39,7 @@ export class Queen extends Piece {
                             {coords:{y:y, x:x}, new:this.serialise(this), newProps:null},
                             {coords:{y:coords.y, x:coords.x}, new:null, newProps:null}
                         ],
-                        taking: board[y][x].getName()
+                        taking: getTag(board[y][x].getName(), board[y][x].getColor())
                     });
                     break;
                 }
@@ -48,7 +49,7 @@ export class Queen extends Piece {
                         {coords:{y:y, x:x}, new:this.serialise(this), newProps:null},
                         {coords:{y:coords.y, x:coords.x}, new:null, newProps:null}
                     ],
-                    taking: board[y][x].getName()
+                    taking: getTag(board[y][x].getName(), board[y][x].getColor())
                 });
                 y += this.vectors[i].y;
                 x += this.vectors[i].x;

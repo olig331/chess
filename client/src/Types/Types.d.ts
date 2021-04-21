@@ -22,6 +22,12 @@ type castleSwapResult = { qside: boolean; kside: boolean };
 
 type legalMovesResult = {
     move: coords;
-    effects: { coords: coords; new: Piece | null; newProps: any }[];
+    effects: effectInstance[];
     taking: string;
+};
+
+type effectInstance = {
+    coords: coords;
+    new: Piece | null;
+    newProps: any;
 };

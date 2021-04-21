@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { SelectedContext, BoardContext, PlayerContext } from '../GameInstance/GameInstance'
 import { removeHighlights } from '../../HelperFunctions/highlightFunctions';
-
+import { simulateMoveSound } from '../../HelperFunctions/triggerAudio';
 
 export const ChessBoard: React.FC = () => {
 
@@ -25,14 +25,16 @@ export const ChessBoard: React.FC = () => {
     }, [rotateDegree])
 
     const handleMoveing = (col: any) => {
-        let newData: BoardNode[][] | null = board.applyMove(selected, col);
+        let newData: BoardNode[][] | null = board.applyMove(selected, col, player.oppoId);
         //setSelected(null)
         if (newData) {
             setBoard(newData);
             setSelected(null);
             removeHighlights();
-        }
-    }
+            player.yourTurn = false
+            simulateMoveSound();
+        };
+    };
 
     return (
         <div className="board_wrapper"

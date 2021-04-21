@@ -1,6 +1,8 @@
 import { getClass } from "../HelperFunctions/getClass";
 import { Piece } from "../Classes/Piece";
 import { getVectors } from "../HelperFunctions/getVectors";
+import { getTag } from "../HelperFunctions/getTag";
+const socket = require("../SocketConnection/Socket").socket;
 
 export class Board {
     public board: Node[][];
@@ -31,44 +33,32 @@ export class Board {
         return result;
     };
     //prettier-ignore
-    public applyMove = (selected:any, newPos:any):Node[][] | false => {
+    public applyMove = (selected:any, newPos:any, oppoId:string):Node[][] | false => {
        // lled")
         let i:number;
         for(i = 0; i < selected.data.moves.length; i++){
             let curr:coords = selected.data.moves[i].move,
                 to:coords = newPos.getCoords();
             if(JSON.stringify(curr) === JSON.stringify(to)){ // if the coords in possible moves match the new sqaure allow it
-                this.updateTheBoard(selected.data.moves[i]);
-                console.log("board after", this.board)
-                return this.board;
+                console.log(selected.data.moves[i])
+                socket.emit("sendMove", JSON.stringify({toId:oppoId, data:selected.data.moves[i]}));
+                return this.updateTheBoard(selected.data.moves[i]);
             }
         }
         return false;
     }
 
-    public getTag = (name: string, color?: string) => {
-        let char: string;
-        name === "knight" ? (char = "n") : (char = name[0]);
-        return color === "white" ? char.toUpperCase() : char;
-    };
-
-    public updateTheBoard = (update: any): void => {
+    public updateTheBoard = (update: legalMovesResult): any => {
         let i: number;
         for (i = 0; i < update.effects.length; i++) {
-            let curr = update.effects[i],
-                name = curr.new ? curr.new.name : ".",
-                color = curr.new ? curr.new.color : "";
-            console.log(
-                "before being passed to get tag",
-                update.effects[i],
-                name,
-                color,
-                curr
-            );
-            this.board[update.effects[i].coords.y][
-                update.effects[i].coords.x
-            ].data = getClass(this.getTag(name, color));
+            let curr: effectInstance = update.effects[i],
+                name: string = curr.new ? curr.new.name : ".",
+                color: string = curr.new ? curr.new.color : "";
+            //prettier-ignore
+            this.board[update.effects[i].coords.y][update.effects[i].coords.x]
+                .data = getClass(getTag(name, color));
         }
+        return this.board;
     };
 
     public getDeepCopy = () => {
@@ -159,7 +149,6 @@ class Node {
         let i: number,
             kingColor = kingData.color,
             result: boolean = false;
-        console.log("king Data", kingData);
         for (i = 0; i < Node.kingCheckVectors.length; i++) {
             let y: number = kingData.coords.y + Node.kingCheckVectors[i].y,
                 x: number = kingData.coords.x + Node.kingCheckVectors[i].x;
@@ -238,7 +227,6 @@ class Node {
                 }
             }
         }
-        console.log(result);
         return result;
     };
 }

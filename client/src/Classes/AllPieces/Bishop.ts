@@ -1,4 +1,5 @@
 import { Piece } from "../Piece";
+import { getTag } from "../../HelperFunctions/getTag";
 
 export class Bishop extends Piece {
     public color: string;
@@ -34,10 +35,10 @@ export class Bishop extends Piece {
                     result.push({ 
                         move:{y: y, x: x },
                         effects: [
-                            {coords:{y:y, x:x}, new:this, newProps:null},
+                            {coords:{y:y, x:x}, new:this.serialise(this), newProps:null},
                             {coords:{y:coords.y, x:coords.x}, new:null, newProps:null}
                         ],
-                        taking: board[y][x].getName()
+                        taking: getTag(board[y][x].getName(), board[y][x].getColor())
                     });
                     break;
                 }
@@ -45,10 +46,10 @@ export class Bishop extends Piece {
                 result.push({ 
                     move:{y: y, x: x },
                     effects: [
-                        {coords:{y:y, x:x}, new:this, newProps:null},
+                        {coords:{y:y, x:x}, new:this.serialise(this), newProps:null},
                         {coords:{y:coords.y, x:coords.x}, new:null, newProps:null}
                     ],
-                    taking: board[y][x].getName()
+                    taking: getTag(board[y][x].getName(), board[y][x].getColor())
                 });
                 y += this.vectors[i].y;
                 x += this.vectors[i].x;
