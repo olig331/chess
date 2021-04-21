@@ -1,7 +1,7 @@
 import React from 'react';
 import useSound from 'use-sound';
 import endSound from './AudioAssests/endGameSound.mp3'
-import moveSound from "./AudioAssests/moveSound.mp3";
+import moveSound from "./AudioAssests/newMoveSound.mp3";
 import startSound from './AudioAssests/startSound.mp3'
 
 export const PlayAudio = () => {

@@ -21,7 +21,6 @@ let colors = ["white", "black"];
 let lobbyFromSocketId = {}
 
 io.on("connection", socket => {
-    console.log(socket.id)
     socket.on("joinedLobby", lobbyId => {
         if (lobbys[lobbyId]) {
             const length = lobbys[lobbyId].length;
@@ -43,7 +42,6 @@ io.on("connection", socket => {
     })
 
     socket.on("sendMove", payload => {
-        console.log("send move seen in server", payload)
         const parsedData = JSON.parse(payload)
         io.to(parsedData.toId).emit("recieveMove", JSON.stringify(parsedData.data));
     });
