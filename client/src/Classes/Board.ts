@@ -5,7 +5,7 @@ import { getVectors } from "../HelperFunctions/getVectors";
 export class Board {
     public board: Node[][];
     private static startingPositions: string =
-        "rnbqkbnrpp....pp................................PP....PPRNBQKBNR";
+        "rnbqkbnrpp....pp................................PP....PPR...K..R";
 
     constructor() {
         this.board = this.initBoard();
@@ -32,22 +32,43 @@ export class Board {
     };
     //prettier-ignore
     public applyMove = (selected:any, newPos:any):Node[][] | false => {
-       // console.log("apply move called")
+       // lled")
         let i:number;
         for(i = 0; i < selected.data.moves.length; i++){
-            let curr:coords = selected.data.moves[i],
+            let curr:coords = selected.data.moves[i].move,
                 to:coords = newPos.getCoords();
             if(JSON.stringify(curr) === JSON.stringify(to)){ // if the coords in possible moves match the new sqaure allow it
-                this.updateTheBoard(selected, newPos);
+                this.updateTheBoard(selected.data.moves[i]);
+                console.log("board after", this.board)
                 return this.board;
             }
         }
         return false;
     }
 
-    public updateTheBoard = (old: Node, newPos: Node): void => {
-        this.board[newPos.y][newPos.x].data = old.data;
-        this.board[old.y][old.x].data = null;
+    public getTag = (name: string, color?: string) => {
+        console.log(name, color);
+        let char = name[0];
+        return color === "white" ? char.toUpperCase() : char;
+    };
+
+    public updateTheBoard = (update: any): void => {
+        let i: number;
+        for (i = 0; i < update.effects.length; i++) {
+            let curr = update.effects[i],
+                name = curr.new ? curr.new.name : ".",
+                color = curr.new ? curr.new.color : "";
+            console.log(
+                "before being passed to get tag",
+                update.effects[i],
+                name,
+                color,
+                curr
+            );
+            this.board[update.effects[i].coords.y][
+                update.effects[i].coords.x
+            ].data = getClass(this.getTag(name, color));
+        }
     };
 
     public getDeepCopy = () => {
@@ -95,28 +116,39 @@ class Node {
     };
 
     //pass in the board class so we can make a deep copy and update the board accoridningly and check for check
-    public getPiecesMoves = (board: Board): coords[] => {
+    //prettier-ignore
+    public getPiecesMoves = (board: Board, kingData: KingsPos, inCheck:boolean): legalMovesResult[] => {
         //prettier-ignore
-        let moves:coords[] = this.data.getLegalMoves({ y: this.y, x: this.x }, board.board),
+        let moves:legalMovesResult[] = this.data.getLegalMoves({ y: this.y, x: this.x }, board.board, inCheck),
             i:number,
-            result:coords[] = [],
-            kingData = {coords:{y:7, x:4}, color:"white"}
-
+            j:number,
+            result:legalMovesResult[] = [];
+        console.log("moves get peices moves", moves)
         if (moves) {
             for (i = 0; i < moves.length; i++) {
+                console.log(moves[i])
                 let newBoard = board.getDeepCopy();
-                console.log("newboard deep copy", newBoard);
+                //console.log("new board",newBoard)
+                let kingDataToPass;
+                if (this.getName() === "king") {
+                    kingDataToPass = {
+                        coords: { y: moves[i].move.y, x: moves[i].move.x },
+                        color: this.getColor(),
+                    };
+                } else {
+                    kingDataToPass = kingData;
+                }
+                for(j = 0; j < moves[i].effects.length; j++){
+                    const curr = moves[i].effects[j]
+                    newBoard[curr.coords.y][curr.coords.x].data = curr.new
+                }
 
-                newBoard[moves[i].y][moves[i].x].data = this.data;
-                newBoard[this.y][this.x].data = null;
-                console.log("deep copy after moves", newBoard);
-
-                if (!this.checkForKingInCheck(kingData, newBoard)) {
+                if (!this.checkForKingInCheck(kingDataToPass, newBoard)) {
                     result.push(moves[i]);
                 }
             }
         }
-        return result;
+    return result;
     };
 
     // this function takes in the current kings position
@@ -127,7 +159,7 @@ class Node {
         let i: number,
             kingColor = kingData.color,
             result: boolean = false;
-        console.log("board in check for check", board);
+        console.log("king Data", kingData);
         for (i = 0; i < Node.kingCheckVectors.length; i++) {
             let y: number = kingData.coords.y + Node.kingCheckVectors[i].y,
                 x: number = kingData.coords.x + Node.kingCheckVectors[i].x;
@@ -141,13 +173,12 @@ class Node {
                     //prettier-ignore
                     if(name === "knight" && color === this.oppoClr[kingColor]){
                         result = true;
-                        console.log("knight")
                     }
                 }
                 // checking for diagonals
                 if (i > 7 && i < 12) {
+                    let loopCount: number = 0;
                     while (Node.inRange(y) && Node.inRange(x)) {
-                        let loopCount: number = 0;
                         newSq = board[y][x];
                         name = newSq.data ? newSq.data.name : "";
                         color = newSq.data ? newSq.data.color : "";
@@ -157,20 +188,19 @@ class Node {
 
                         // white king black pawns
                         if (i < 10 && loopCount < 1 && kingColor === "white") {
-                            if (name === "pawn" && color === "black") { console.log("white king black pawn");result = true;break; } // prettier-ignore
+                            if (name === "pawn" && color === "black") { result = true;break; } // prettier-ignore
                         }
                         // black king white pawns
                         if (i > 9 && loopCount < 1 && kingColor === "black") {
-                            if (name === "pawn" && color === "white") { console.log("black king whitepawn"); result = true;break; } // prettier-ignore
+                            if (name === "pawn" && color === "white") { result = true;break; } // prettier-ignore
                         }
                         if (loopCount < 1) {
-                            if(name === "king" && color === this.oppoClr[kingColor]){console.log("diag count <1"); result = true; break;} // prettier-ignore
+                            if(name === "king" && color === this.oppoClr[kingColor]){ result = true; break;} // prettier-ignore
                         }
 
                         if (color === this.oppoClr[kingColor]) {
                             if (name === "queen" || name === "bishop") {
                                 result = true;
-                                console.log("diag count diag");
                                 break;
                             }
                         }
@@ -181,8 +211,8 @@ class Node {
                 }
                 // Lateral checking (rooks queens)
                 if (i > 11) {
+                    let loopCount: number = 0;
                     while (Node.inRange(y) && Node.inRange(x)) {
-                        let loopCount: number = 0;
                         newSq = board[y][x];
                         name = newSq.data ? newSq.data.name : "";
                         color = newSq.data ? newSq.data.color : "";
@@ -191,13 +221,12 @@ class Node {
                         if(name === "bishop" || name === "pawn" || name === "knight"){ break; } // prettier-ignore
 
                         if (loopCount < 1) {
-                            if(name === "king" && color === this.oppoClr[kingColor]){console.log("lateral count <1"); result = true; break } // prettier-ignore
+                            if(name === "king" && color === this.oppoClr[kingColor]){result = true; break } // prettier-ignore
                         }
 
                         if (color === this.oppoClr[kingColor]) {
                             if (name === "queen" || name === "rook") {
                                 result = true;
-                                console.log("lateral count lateral");
                                 break;
                             }
                         }

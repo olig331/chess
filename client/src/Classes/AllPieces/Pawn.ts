@@ -7,6 +7,8 @@ export class Pawn extends Piece {
     public startingRank: number;
     public endRank: number;
     public name: string;
+    public openForEnPassant: boolean;
+
     constructor(color: string, vectors: vectorsArr, renderImage: any) {
         super();
         this.color = color;
@@ -15,11 +17,15 @@ export class Pawn extends Piece {
         this.startingRank = color === "white" ? 6 : 1;
         this.endRank = color === "white" ? 0 : 7;
         this.name = this.getName();
+        this.openForEnPassant = false;
     }
 
-    public getLegalMoves = (coords: coords, board: any[]): coords[] => {
+    public getLegalMoves = (
+        coords: coords,
+        board: any[]
+    ): legalMovesResult[] => {
         let i: number,
-            result: coords[] = [];
+            result: legalMovesResult[] = [];
 
         for (i = 0; i < this.vectors.length; i++) {
             let y: number = coords.y + this.vectors[i].y,
@@ -31,16 +37,37 @@ export class Pawn extends Piece {
                 const name = newSq.getName();
 
                 if(i < 1 && !name){ // handle moving forward 
-                    result.push({y:y, x:x}) 
+                    result.push({ 
+                        move:{y: y, x: x },
+                        effects: [
+                            {coords:{y:y, x:x}, new:this.serialise(this), newProps:null},
+                            {coords:{y:coords.y, x:coords.x}, new:null, newProps:null}
+                        ],
+                        taking: ""
+                    });
                     // handles moving forward 2 sqauares
                     if(coords.y === this.startingRank && !board[y + this.vectors[i].y][x].getName()){
-                        result.push({y:y + this.vectors[i].y, x:x})
+                        result.push({ 
+                            move:{y: y + this.vectors[i].y, x: x },
+                            effects: [
+                                {coords:{y:y + this.vectors[i].y, x:x}, new:this.serialise(this), newProps:{openForEnPassant:true}},
+                                {coords:{y:coords.y, x:coords.x}, new:null, newProps:null}
+                            ],
+                            taking: ""
+                        });
                     }
                 }
                 // sideways taking
                 if (i > 0) {
                     if (name && newSq.getColor() === this.oppoClr[this.color]) {
-                        result.push({ y: y, x: x });
+                        result.push({ 
+                            move:{y: y, x: x },
+                            effects: [
+                                {coords:{y:y, x:x}, new:this.serialise(this), newProps:null},
+                                {coords:{y:coords.y, x:coords.x}, new:null, newProps:null}
+                            ],
+                            taking: board[y][x].getName()
+                        });
                     }
                 }
             }

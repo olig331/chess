@@ -5,6 +5,7 @@ export class Rook extends Piece {
     public vectors: vectorsArr;
     public renderImage: any;
     public name: string;
+    public hasNeverMoved: boolean;
 
     constructor(color: string, vectors: vectorsArr, renderImage: any) {
         super();
@@ -12,11 +13,12 @@ export class Rook extends Piece {
         this.vectors = vectors;
         this.renderImage = renderImage;
         this.name = this.getName();
+        this.hasNeverMoved = true;
     }
-
-    public getLegalMoves = (coords: coords, board: any[]): coords[] => {
+    //prettier-ignore
+    public getLegalMoves = (coords: coords, board: any[]): legalMovesResult[] => {
         let i: number,
-            result: coords[] = [];
+            result: legalMovesResult[] = [];
 
         for (i = 0; i < this.vectors.length; i++) {
             let y: number = coords.y + this.vectors[i].y,
@@ -31,11 +33,24 @@ export class Rook extends Piece {
                 }
                 //prettier-ignore
                 if (newSq && newSq.getColor() === this.oppoClr[this.color] && name !== "king") {
-                    result.push({ y: y, x: x });
+                    result.push({ 
+                        move:{y: y, x: x },
+                        effects: [
+                            {coords:{y:y, x:x}, new:this.serialise(this), newProps:null},
+                            {coords:{y:coords.y, x:coords.x}, new:null, newProps:null}
+                        ],
+                        taking: board[y][x].getName()
+                    });
                     break;
                 }
-
-                result.push({ y: y, x: x });
+                result.push({ 
+                    move:{y: y, x: x },
+                    effects: [
+                        {coords:{y:y, x:x}, new:this.serialise(this), newProps:null},
+                        {coords:{y:coords.y, x:coords.x}, new:null, newProps:null}
+                    ],
+                    taking: board[y][x].getName()
+                });
                 y += this.vectors[i].y;
                 x += this.vectors[i].x;
             }

@@ -12,10 +12,10 @@ export class Bishop extends Piece {
         this.renderImage = renderImage;
         this.name = this.getName();
     }
-
-    public getLegalMoves = (coords: coords, board: any[][]): any => {
+    //prettier-ignore
+    public getLegalMoves = (coords: coords, board: any[][]): legalMovesResult[] => {
         let i: number,
-            result: coords[] = [];
+            result: legalMovesResult[] = [];
         console.log("cords passed", coords);
 
         for (i = 0; i < this.vectors.length; i++) {
@@ -27,16 +27,29 @@ export class Bishop extends Piece {
                 const name = newSq.getName();
 
                 if (newSq && newSq.getColor() === this.color) {
-                    console.log("breaking first");
                     break;
                 }
                 //prettier-ignore
                 if (newSq && newSq.getColor() === this.oppoClr[this.color] && name !== "king") {
-                    console.log("breaking seconds");
-                    result.push({ y: y, x: x });
+                    result.push({ 
+                        move:{y: y, x: x },
+                        effects: [
+                            {coords:{y:y, x:x}, new:this, newProps:null},
+                            {coords:{y:coords.y, x:coords.x}, new:null, newProps:null}
+                        ],
+                        taking: board[y][x].getName()
+                    });
                     break;
                 }
-                result.push({ y: y, x: x });
+                //prettier-ignore
+                result.push({ 
+                    move:{y: y, x: x },
+                    effects: [
+                        {coords:{y:y, x:x}, new:this, newProps:null},
+                        {coords:{y:coords.y, x:coords.x}, new:null, newProps:null}
+                    ],
+                    taking: board[y][x].getName()
+                });
                 y += this.vectors[i].y;
                 x += this.vectors[i].x;
             }

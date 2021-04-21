@@ -12,30 +12,41 @@ export class Queen extends Piece {
         this.renderImage = renderImage;
         this.name = this.getName();
     }
-
-    public getLegalMoves = (coords: coords, board: any[][]): coords[] => {
+    //prettier-ignore
+    public getLegalMoves = (coords: coords, board: any[][]): legalMovesResult[] => {
         let i: number,
-            result: coords[] = [];
+            result: legalMovesResult[] = [];
 
         for (i = 0; i < this.vectors.length; i++) {
             let y: number = coords.y + this.vectors[i].y,
                 x: number = coords.x + this.vectors[i].x;
-            console.log("setting y, x", y, x, i, this.vectors[i]);
             while (this.inRange(y) && this.inRange(x)) {
                 const newSq = board[y][x];
                 const name = newSq.getName();
 
                 if (newSq && newSq.getColor() === this.color) {
-                    console.log("first break");
                     break;
                 }
                 //prettier-ignore
                 if (newSq && newSq.getColor() === this.oppoClr[this.color] && name !== "king") {
-                    console.log("secod break");
-                    result.push({ y: y, x: x });
+                    result.push({ 
+                        move:{y: y, x: x },
+                        effects: [
+                            {coords:{y:y, x:x}, new:this.serialise(this), newProps:null},
+                            {coords:{y:coords.y, x:coords.x}, new:null, newProps:null}
+                        ],
+                        taking: board[y][x].getName()
+                    });
                     break;
                 }
-                result.push({ y: y, x: x });
+                result.push({ 
+                    move:{y: y, x: x },
+                    effects: [
+                        {coords:{y:y, x:x}, new:this.serialise(this), newProps:null},
+                        {coords:{y:coords.y, x:coords.x}, new:null, newProps:null}
+                    ],
+                    taking: board[y][x].getName()
+                });
                 y += this.vectors[i].y;
                 x += this.vectors[i].x;
             }

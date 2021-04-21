@@ -1,11 +1,9 @@
 import React, { useContext, useEffect } from 'react'
 import { SelectedContext, BoardContext } from '../GameInstance/GameInstance'
+import { removeHighlights } from '../../HelperFunctions/highlightFunctions';
 
-interface PassedProps {
-    removeHighlights: () => void
-}
 
-export const ChessBoard: React.FC<PassedProps> = ({ removeHighlights }) => {
+export const ChessBoard: React.FC = () => {
 
     const { selected, setSelected } = useContext(SelectedContext)
     const { board, setBoard } = useContext(BoardContext);

@@ -1,6 +1,6 @@
 export abstract class Piece {
     public oppoClr: { [key: string]: string };
-    public moves: coords[];
+    public moves: legalMovesResult[];
     constructor() {
         this.oppoClr = { white: "black", black: "white" };
         this.moves = [];
@@ -9,7 +9,8 @@ export abstract class Piece {
     private static abstractErrorMsg: string =
         "function must be defined in all classes that inherit from Piece";
 
-    public abstract getLegalMoves = (coords: coords, board: Node[][]): any => {
+    //prettier-ignore
+    public abstract getLegalMoves = (coords: coords, board: Node[][], inCheck?:boolean): any => {
         throw new Error("getLegalMoves " + Piece.abstractErrorMsg);
     };
 
@@ -19,5 +20,9 @@ export abstract class Piece {
 
     public inRange = (val: number): boolean => {
         return val <= 7 && val >= 0;
+    };
+
+    public serialise = (data: any) => {
+        return JSON.parse(JSON.stringify(data));
     };
 }

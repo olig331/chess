@@ -1,6 +1,8 @@
 import React from 'react'
 import { Board } from '../../Classes/Board';
+import { Player } from '../../Classes/Player';
 import { ChessBoard } from '../ChessBoard/ChessBoard';
+import { highlightMovesSquares } from '../../HelperFunctions/highlightFunctions';
 
 const SelectedContext: any = React.createContext<any>(null)
 const BoardContext: any = React.createContext(null)
@@ -9,37 +11,25 @@ export class GameInstance extends React.Component {
 
     state: GameState = {
         board: new Board(),
-        selected: null
+        selected: null,
+        player: new Player("white", "")
     }
 
-    public highlightMovesSquares = (moves: coords[]) => {
-        moves && moves.map((move: coords) => {
-            return document.getElementsByClassName(`node ${move.y}-${move.x}`)[0].className =
-                `node ${move.y}-${move.x} highlight`
-        });
-    };
 
-    public removeHighlights = () => {
-        document.querySelectorAll(".highlight").forEach((ele: any) => {
-            let newClass: string = ele.className.replace(/\shighlight/, "");
-            return ele.className = newClass;
-        });
-    };
-
-    public setSelected = (toSelect: any, copy: any) => {
+    public setSelected = (toSelect: any) => {
         console.log("setSelected called", toSelect)
         if (toSelect === null || toSelect.data === null) {
             this.setState({
                 selected: null
             })
-            return
+            return;
         }
 
-        let moves = toSelect.getPiecesMoves(this.state.board);
+        let moves = toSelect.getPiecesMoves(this.state.board, this.state.player.kingsPos, this.state.player.inCheck);
         this.setState({
             selected: toSelect
         }, () => {
-            this.highlightMovesSquares(moves)
+            highlightMovesSquares(moves)
         });
         return;
     };
@@ -66,9 +56,7 @@ export class GameInstance extends React.Component {
             <>
                 <BoardContext.Provider value={{ board, setBoard }}>
                     <SelectedContext.Provider value={{ selected, setSelected }}>
-                        <ChessBoard
-                            removeHighlights={this.removeHighlights}
-                        />
+                        <ChessBoard />
                     </SelectedContext.Provider>
                 </BoardContext.Provider>
             </>
