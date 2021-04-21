@@ -17,7 +17,7 @@ export class Pawn extends Piece {
         this.startingRank = color === "white" ? 6 : 1;
         this.endRank = color === "white" ? 0 : 7;
         this.name = this.getName();
-        this.openForEnPassant = false;
+        this.openForEnPassant = true;
     }
 
     public getLegalMoves = (
@@ -35,6 +35,9 @@ export class Pawn extends Piece {
             if(this.inRange(y) && this.inRange(x)){
                 const newSq = board[y][x];
                 const name = newSq.getName();
+                if(name === "king"){
+                    break
+                }
 
                 if(i < 1 && !name){ // handle moving forward 
                     result.push({ 
@@ -69,6 +72,39 @@ export class Pawn extends Piece {
                             taking: board[y][x].getName()
                         });
                     }
+                }
+
+                // Handle Enpassent as move gen;
+                if(this.inRange(coords.x - 1)){
+                    let passant = board[coords.y][coords.x - 1];
+                    console.log(passant.getName(), passant.getColor())
+                    if(passant.getName() === "pawn" && passant.getColor() === this.oppoClr[this.color] && passant.data.openForEnPassant){
+                        result.push({
+                            move:{y:coords.y + this.vectors[0].y, x: coords.x - 1},
+                            effects: [
+                                {coords:{y:coords.y + this.vectors[0].y, x: coords.x - 1}, new:this.serialise(this), newProps:null},
+                                {coords:{y:coords.y, x:coords.x}, new:null, newProps:null},
+                                {coords:{y:coords.y, x:coords.x - 1}, new:null, newProps:null}
+                            ],
+                            taking:"pawn"
+                        })
+                    }
+                    console.log("failed enpassent, -1")
+                }
+                if(this.inRange(coords.x + 1)){
+                    let passant = board[coords.y][coords.x + 1];
+                    if(passant.getName() === "pawn" && passant.getColor() === this.oppoClr[this.color] && passant.data.openForEnPassant){
+                        result.push({
+                            move:{y:coords.y + this.vectors[0].y, x: coords.x + 1},
+                            effects: [
+                                {coords:{y:coords.y + this.vectors[0].y, x: coords.x + 1}, new:this.serialise(this), newProps:null},
+                                {coords:{y:coords.y, x:coords.x}, new:null, newProps:null},
+                                {coords:{y:coords.y, x:coords.x + 1}, new:null, newProps:null}
+                            ],
+                            taking:"pawn"
+                        })
+                    }
+                    console.log("failed enpassent,  + 1")
                 }
             }
         }

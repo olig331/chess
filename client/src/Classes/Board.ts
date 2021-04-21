@@ -47,8 +47,8 @@ export class Board {
     }
 
     public getTag = (name: string, color?: string) => {
-        console.log(name, color);
-        let char = name[0];
+        let char: string;
+        name === "knight" ? (char = "n") : (char = name[0]);
         return color === "white" ? char.toUpperCase() : char;
     };
 

@@ -12,25 +12,22 @@ export class GameInstance extends React.Component {
     state: GameState = {
         board: new Board(),
         selected: null,
-        player: new Player("white", "")
+        player: null
     }
 
 
     public setSelected = (toSelect: any) => {
-        console.log("setSelected called", toSelect)
         if (toSelect === null || toSelect.data === null) {
             this.setState({
                 selected: null
             })
             return;
         }
-
         let moves = toSelect.getPiecesMoves(this.state.board, this.state.player.kingsPos, this.state.player.inCheck);
         this.setState({
             selected: toSelect
-        }, () => {
-            highlightMovesSquares(moves)
         });
+        highlightMovesSquares(moves);
         return;
     };
 
@@ -39,12 +36,8 @@ export class GameInstance extends React.Component {
         copy.board = newBoard;
         this.setState({
             board: copy
-        }, () => {
-            console.log("after update check if class in instact", this.state.board, this.state.board.board)
         })
     }
-
-
 
     render() {
         const selected = this.state.selected

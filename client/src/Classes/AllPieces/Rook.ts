@@ -31,8 +31,11 @@ export class Rook extends Piece {
                 if (newSq && newSq.getColor() === this.color) {
                     break;
                 }
+                if(name === "king"){
+                    break
+                }
                 //prettier-ignore
-                if (newSq && newSq.getColor() === this.oppoClr[this.color] && name !== "king") {
+                if (newSq && newSq.getColor() === this.oppoClr[this.color]) {
                     result.push({ 
                         move:{y: y, x: x },
                         effects: [

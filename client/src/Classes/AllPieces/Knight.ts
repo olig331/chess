@@ -12,11 +12,8 @@ export class Knight extends Piece {
         this.renderImage = renderImage;
         this.name = this.getName();
     }
-
-    public getLegalMoves = (
-        coords: coords,
-        board: any[][]
-    ): legalMovesResult[] => {
+    //prettier-ignore
+    public getLegalMoves = (coords: coords, board: any[][]): legalMovesResult[] => {
         let i: number,
             result: legalMovesResult[] = [];
 
@@ -25,10 +22,13 @@ export class Knight extends Piece {
                 x: number = coords.x + this.vectors[i].x;
 
             if (this.inRange(y) && this.inRange(x)) {
-                const newSq = board[y][x];
-                const name = newSq.getName();
+                let newSq = board[y][x];
+                let name = newSq.getName();
+                if(name === "king"){
+                    continue
+                };
 
-                if (name !== "king" && newSq.getColor() !== this.color) {
+                if (newSq && newSq.getColor() !== this.color) {
                     // prettier-ignore
                     result.push({ 
                         move:{y: y, x: x },
