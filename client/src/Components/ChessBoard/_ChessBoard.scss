@@ -15,6 +15,8 @@ $whitesqare: radial-gradient(
     //border: 30px solid burlywood;
     filter: drop-shadow(1px 1px 45px #999);
     border-radius: 10px;
+    max-width: 805px;
+    margin: 0 auto;
     .row {
         display: flex;
     }

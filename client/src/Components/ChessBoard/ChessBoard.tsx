@@ -20,6 +20,10 @@ export const ChessBoard: React.FC = () => {
         return;
     }, [player])
 
+    useEffect(() => {
+        console.log("degrees", rotateDegree)
+    }, [rotateDegree])
+
     const handleMoveing = (col: any) => {
         let newData: BoardNode[][] | null = board.applyMove(selected, col);
         //setSelected(null)
@@ -31,12 +35,13 @@ export const ChessBoard: React.FC = () => {
     }
 
     return (
-        <div className="board_wrapper">
+        <div className="board_wrapper"
+            style={{ transform: `rotate(${rotateDegree}deg)` }}
+        >
             {board.board.map((row: any, rowIndex: number) => (
                 <div key={rowIndex} className={`row ${rowIndex}`}>
                     {row.map((col: any, colIndex: number) => (
                         <div
-                            style={{ transform: `rotate(${rotateDegree}deg)` }}
                             key={`${rowIndex}${colIndex}`}
                             className={`node ${rowIndex}-${colIndex}`}
                             onClick={() => selected !== null ? handleMoveing(col) : setSelected(col)}
@@ -50,7 +55,6 @@ export const ChessBoard: React.FC = () => {
                     ))}
                 </div>
             ))}
-            <button onClick={() => console.log(selected)}>;sodifjhlsdioufjdsf</button>
         </div>
     )
 }
