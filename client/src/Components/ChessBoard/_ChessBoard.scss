@@ -17,10 +17,10 @@ $whitesqare: radial-gradient(
     border-radius: 10px;
     max-width: 805px;
     margin: 0 auto;
+
     .row {
         display: flex;
     }
-
     .node {
         //border: 1px solid rgba(209, 209, 209, 0.452);
         width: 100px;
@@ -54,7 +54,7 @@ $whitesqare: radial-gradient(
         &:hover {
             cursor: pointer;
         }
-        .piece {
+        .piece[data-active="0"] {
             width: 100%;
             height: 100%;
             display: flex;
@@ -62,14 +62,20 @@ $whitesqare: radial-gradient(
             justify-content: center;
             font-size: 4.2rem;
             z-index: 100;
-            pointer-events: none;
-            //transition: 0.15s linear;
-            svg {
-                pointer-events: none;
-                //transition: 0.15s linear;
-            }
+            opacity: 1;
+        }
+        .piece[data-active="1"] {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4.2rem;
+            z-index: 100;
+            opacity: 0;
         }
     }
+
     // Map the rows
     @for $col from 1 through 9 {
         div:nth-child(#{$col}) {
@@ -196,4 +202,20 @@ $whitesqare: radial-gradient(
 
 .selected {
     border: 3px solid #00b1b1 !important; // Fix this
+}
+
+// .dragging {
+//     &::after {
+//         background-color: transparent !important;
+//         visibility: none !important;
+//     }
+//     background: transparent !important;
+//     opacity: 1 !important;
+//     display: flex !important;
+//     justify-content: center !important;
+//     align-items: center !important;
+// }
+
+.invisible {
+    display: none;
 }

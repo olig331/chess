@@ -10,6 +10,7 @@ type GameState = {
     board: Board;
     selected: any;
     player: Player;
+    game: Game;
 };
 
 type Pieces = King | Queen | Rook | Bishop | Pawn | Knight;

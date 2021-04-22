@@ -1,14 +1,16 @@
 export class Game {
     public fallenPieces: { [key: string]: string[] };
+    public gameOver: boolean;
     constructor() {
         this.fallenPieces = { white: [], black: [] };
+        this.gameOver = false;
     }
 
-    public updateFallenPieces = (piece: any) => {
-        if (piece.color === "white") {
-            this.fallenPieces.white.push(piece);
+    public updateFallenPieces = (tag: string) => {
+        if (tag.charCodeAt(0) < 91) {
+            this.fallenPieces.white.push(tag);
         } else {
-            this.fallenPieces.white.push(piece);
+            this.fallenPieces.black.push(tag);
         }
     };
 }

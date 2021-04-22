@@ -1,19 +1,20 @@
 import React from 'react'
 import { Board } from '../../Classes/Board';
 import { Player } from '../../Classes/Player';
+import { Game } from '../../Classes/Game';
 import { ChessBoard } from '../ChessBoard/ChessBoard';
 import { highlightMovesSquares } from '../../HelperFunctions/highlightFunctions';
 import { PlayAudio } from '../../PlayAudio';
-
 const socket = require('../../SocketConnection/Socket').socket;
 
-const SelectedContext: any = React.createContext<any>(null)
-const BoardContext: any = React.createContext(null)
+const SelectedContext: any = React.createContext(null);
+const BoardContext: any = React.createContext(null);
 const PlayerContext: any = React.createContext(null);
+const GameContext: any = React.createContext(null);
 
 interface PassedProps {
-    match: any
-}
+    match: any;
+};
 
 export class GameInstance extends React.Component<PassedProps> {
 
@@ -21,21 +22,26 @@ export class GameInstance extends React.Component<PassedProps> {
         lobbyId: this.props.match.params.lobbyId,
         board: new Board(),
         selected: null,
-        player: null
+        player: null,
+        game: null
     }
 
     componentDidMount() {
         socket.emit("joinedLobby", this.state.lobbyId);
         socket.on("getMatchData", (payload: { oppoId: string, color: string }) => {
-            this.setState({ player: new Player(payload.color, payload.oppoId) });
+            this.setState({ player: new Player(payload.color, payload.oppoId), game: new Game() });
+
         });
         socket.on("recieveMove", (data: any) => {
             this.setBoard(this.state.board.updateTheBoard(JSON.parse(data)));
+            let playerCopy = this.state.player;
+            playerCopy.yourTurn = true;
+            this.setState({ player: playerCopy });
         });
     }
 
     public setSelected = (toSelect: any) => {
-        if (toSelect === null || toSelect.data === null) {
+        if (toSelect === null || toSelect.data === null || !this.state.player.yourTurn) {
             this.setState({
                 selected: null
             })
@@ -62,14 +68,17 @@ export class GameInstance extends React.Component<PassedProps> {
         const { setSelected } = this;
         const board = this.state.board;
         const { setBoard } = this;
-        const player = this.state.player
+        const player = this.state.player;
+        const game = this.state.game;
 
         return (
             <>
                 <BoardContext.Provider value={{ board, setBoard }}>
                     <SelectedContext.Provider value={{ selected, setSelected }}>
                         <PlayerContext.Provider value={{ player }}>
-                            <ChessBoard />
+                            <GameContext.Provider value={{ game }}>
+                                <ChessBoard />
+                            </GameContext.Provider>
                         </PlayerContext.Provider>
                     </SelectedContext.Provider>
                 </BoardContext.Provider>
@@ -80,5 +89,5 @@ export class GameInstance extends React.Component<PassedProps> {
     }
 }
 
-export { SelectedContext, BoardContext, PlayerContext }
+export { SelectedContext, BoardContext, PlayerContext, GameContext }
 
