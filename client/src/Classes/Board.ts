@@ -7,7 +7,7 @@ const socket = require("../SocketConnection/Socket").socket;
 export class Board {
     public board: Node[][];
     private static startingPositions: string =
-        "rnbqkbnrpp....pp................................PP....PPR..QKBNR";
+        "rnbqkbnrpppppppp................................PPPPPPPPRNBQKBNR";
 
     constructor() {
         this.board = this.initBoard();
@@ -33,7 +33,7 @@ export class Board {
         return result;
     };
     //prettier-ignore
-    public applyMove = (selected:any, newPos:any, oppoId:string):Node[][] | false => {
+    public applyMove = (selected:any, newPos:any, oppoId:string):{board:Node[][], takingTag:string} | false => {
        // lled")
         let i:number;
         for(i = 0; i < selected.data.moves.length; i++){
@@ -41,7 +41,10 @@ export class Board {
                 to:coords = newPos.getCoords();
             if(JSON.stringify(curr) === JSON.stringify(to)){ // if the coords in possible moves match the new sqaure allow it
                 socket.emit("sendMove", JSON.stringify({toId:oppoId, data:selected.data.moves[i]}));
-                return this.updateTheBoard(selected.data.moves[i]);
+                return {
+                    takingTag: selected.data.moves[i].taking,
+                    board: this.updateTheBoard(selected.data.moves[i])
+                }
             }
         }
         return false;

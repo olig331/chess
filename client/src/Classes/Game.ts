@@ -14,5 +14,6 @@ export class Game {
         } else {
             this.fallenPieces.black.push(tag);
         }
+        console.log("fallenpiece after update", this.fallenPieces);
     };
 }

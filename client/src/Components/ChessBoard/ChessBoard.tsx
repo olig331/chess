@@ -10,6 +10,7 @@ export const ChessBoard: React.FC = () => {
     const { board, setBoard } = useContext(BoardContext);
     const { player, setPlayer } = useContext(PlayerContext);
     const { game } = useContext(GameContext);
+    const [scores, set_scores] = useState<{ "white": number, "black": number }>({ "white": 0, "black": 0 })
     const [rotateDegree, set_rotateDegree] = useState<number>(0);
 
     useEffect(() => {
@@ -26,8 +27,9 @@ export const ChessBoard: React.FC = () => {
     const handleMoveing = (col: any) => {
         if (!player.yourTurn) return; // if its not our turn back out
         const name: string = selected.getName();
-        let newData: BoardNode[][] | null = board.applyMove(selected, col, player.oppoId); // applies the move and returns the new board
+        let newData: any | null = board.applyMove(selected, col, player.oppoId); // applies the move and returns the new board
         if (newData) {
+            game.updateFallenPieces(newData.takingTag)
             if (name === "king") { // if we moved the king update the kings position in player class
                 let copy = player;
                 copy.kingsPos.coords = col.getCoords();
@@ -38,13 +40,23 @@ export const ChessBoard: React.FC = () => {
                 return ele.className = newClass;
             });
             player.setCheckStatus(false) // check if the oppo move put us in check
-            setBoard(newData); // set the board to the new board
+            setBoard(newData.board); // set the board to the new board
             setSelected(null);
             removeHighlights(); // remove all the highlighted nodes
             player.yourTurn = false
             simulateMoveSound();
+            setScores()
         };
     };
+
+    const setScores = () => {
+        console.log("fallen Pieces", game.fallenPieces)
+        const newScores = {
+            "white": getScores(game.fallenPieces.white),
+            "black": getScores(game.fallenPieces.black)
+        }
+        set_scores(newScores)
+    }
 
     const getScores = (fallenPieces: string[]) => {
         let total: number = 0;
@@ -60,8 +72,8 @@ export const ChessBoard: React.FC = () => {
 
     return (
         <>
-            {player && <div>white:{getScores(game.fallenPieces.white)} black:{getScores(game.fallenPieces.black)}</div>}
-            <div className="board_wrapper"
+            <div>white:{scores.white} black:{scores.black}</div>
+            <div className={game === null || game.gameOver ? "board_wrapper board_inactive" : "board_wrapper"}
                 style={{ transform: `rotate(${rotateDegree}deg)` }}
             >
                 {board.board.map((row: any, rowIndex: number) => (

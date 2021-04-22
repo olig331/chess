@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { PlayerContext, SelectedContext } from '../GameInstance/GameInstance';
+import { GameContext, PlayerContext, SelectedContext } from '../GameInstance/GameInstance';
 
 interface PassedProps {
     col: any;
@@ -13,6 +13,7 @@ export const Square: React.FC<PassedProps> = ({ col, rowIndex, colIndex, rotateD
 
     const { selected, setSelected } = useContext(SelectedContext);
     const { player } = useContext(PlayerContext)
+    const { game } = useContext(GameContext)
     const [dragActive, set_dragActive] = useState<string>("0");
 
     const handleDragEnter = (e: any) => {
@@ -62,7 +63,7 @@ export const Square: React.FC<PassedProps> = ({ col, rowIndex, colIndex, rotateD
             onDragEnter={(e) => handleDragEnter(e)}
             onDragLeave={(e) => handleDragLeave(e)}
         >
-            <span
+            {game && <span
                 onDragStart={(e) => handleDragStart(e)}
                 onDragEnd={() => set_dragActive("0")}
                 draggable={player && col.data && col.data.color === player.color ? true : false}
@@ -70,7 +71,7 @@ export const Square: React.FC<PassedProps> = ({ col, rowIndex, colIndex, rotateD
                 style={{ color: col.data && col.data.color, transform: `rotate(${rotateDegree}deg)` }}
                 className="piece">
                 {col.data && col.data.renderImage}
-            </span>
+            </span>}
         </div>
     )
 }

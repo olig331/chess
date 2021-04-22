@@ -2,10 +2,12 @@ import React from 'react'
 import { Board } from '../../Classes/Board';
 import { Player } from '../../Classes/Player';
 import { Game } from '../../Classes/Game';
+import { GameOver } from './GameOver/GameOver';
 import { ChessBoard } from '../ChessBoard/ChessBoard';
 import { highlightMovesSquares } from '../../HelperFunctions/highlightFunctions';
 import { PlayAudio } from '../../PlayAudio';
-import { simulateGameOverSound } from '../../HelperFunctions/triggerAudio';
+import { simulateGameOverSound, simulateStartSound } from '../../HelperFunctions/triggerAudio';
+import { WaitingForPlayer } from './WaitingForPlayer/WaitingForPlayer';
 const socket = require('../../SocketConnection/Socket').socket;
 
 const SelectedContext: any = React.createContext(null);
@@ -31,23 +33,23 @@ export class GameInstance extends React.Component<PassedProps> {
         socket.emit("joinedLobby", this.state.lobbyId);
         socket.on("getMatchData", (payload: { oppoId: string, color: string }) => {
             this.setState({ player: new Player(payload.color, payload.oppoId), game: new Game() });
-
+            simulateStartSound()
         });
         socket.on("recieveMove", (data: any) => {
             let newBoard = this.state.board.updateTheBoard(JSON.parse(data));
-            this.setBoard(newBoard)
             let playerCopy = this.state.player;
+            this.setBoard(newBoard)
             playerCopy.yourTurn = true;
             this.setState({ player: playerCopy });
             this.runRecieveMoveChecks(newBoard)
         });
         socket.on("youWon", () => {
-            let gameCopy = this.state.game;
-            gameCopy.gameOver = true;
-            gameCopy.winner = true;
-            this.setState({ game: gameCopy })
+            this.setGame("won")
         })
-    }
+        socket.on("stalemate", () => {
+            this.setGame("draw");
+        });
+    };
 
     public runRecieveMoveChecks = (newBoard: any) => {
         const king = this.state.player.getKingsPos();
@@ -58,16 +60,14 @@ export class GameInstance extends React.Component<PassedProps> {
             this.state.player.setCheckStatus(true);
             if (hasLegalMoves) { // it is checkmate
                 simulateGameOverSound();
-                let gameCopy = this.state.game;
-                gameCopy.gameOver = true;
-                gameCopy.winner = false;
-                this.setState({ game: gameCopy });
+                this.setGame("lost")
                 socket.emit("lostTheMatch", this.state.player.oppoId)
                 return;
             };
             document.getElementsByClassName(`node ${king.coords.y}-${king.coords.x}`)[0].className += " checked"
         } else { // if we are not in check we need to check if it is stalemate
             if (hasLegalMoves) {
+                this.setGame("draw")
                 return
             }
         }
@@ -97,7 +97,6 @@ export class GameInstance extends React.Component<PassedProps> {
             })
             return;
         }
-
         let moves = toSelect.getPiecesMoves(this.state.board, this.state.player.kingsPos, this.state.player.inCheck);
         this.setState({
             selected: toSelect
@@ -120,6 +119,13 @@ export class GameInstance extends React.Component<PassedProps> {
         })
     }
 
+    public setGame = (result: string) => {
+        let gameCopy = this.state.game;
+        gameCopy.gameOver = true;
+        gameCopy.winner = result
+        this.setState({ game: gameCopy })
+    }
+
     render() {
         const selected = this.state.selected
         const { setSelected } = this;
@@ -131,17 +137,21 @@ export class GameInstance extends React.Component<PassedProps> {
 
         return (
             <>
+                {!this.state.player && <WaitingForPlayer />}
+
                 <BoardContext.Provider value={{ board, setBoard }}>
                     <SelectedContext.Provider value={{ selected, setSelected }}>
                         <PlayerContext.Provider value={{ player, setPlayer }}>
                             <GameContext.Provider value={{ game }}>
-                                <ChessBoard />
+                                <div className="board_container"><ChessBoard /></div>
+                                <GameOver />
                             </GameContext.Provider>
                         </PlayerContext.Provider>
                     </SelectedContext.Provider>
                 </BoardContext.Provider>
 
                 <PlayAudio />
+                <div className="blocker"></div>
             </>
         )
     }
