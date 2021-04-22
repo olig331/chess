@@ -27,4 +27,8 @@ export class Player extends Game {
         this.kingsPos.coords = newCoords;
         return;
     };
+
+    public setCheckStatus = (status: boolean) => {
+        this.inCheck = status;
+    };
 }

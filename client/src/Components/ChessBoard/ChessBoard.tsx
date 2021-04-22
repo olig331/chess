@@ -8,7 +8,7 @@ export const ChessBoard: React.FC = () => {
 
     const { selected, setSelected } = useContext(SelectedContext);
     const { board, setBoard } = useContext(BoardContext);
-    const { player } = useContext(PlayerContext);
+    const { player, setPlayer } = useContext(PlayerContext);
     const { game } = useContext(GameContext);
     const [rotateDegree, set_rotateDegree] = useState<number>(0);
 
@@ -22,18 +22,25 @@ export const ChessBoard: React.FC = () => {
         return;
     }, [player]);
 
-    useEffect(() => {
-        console.log("degrees", rotateDegree)
-    }, [rotateDegree])
 
     const handleMoveing = (col: any) => {
-        if (!player.yourTurn) return;
-        let newData: BoardNode[][] | null = board.applyMove(selected, col, player.oppoId);
-        //setSelected(null)
+        if (!player.yourTurn) return; // if its not our turn back out
+        const name: string = selected.getName();
+        let newData: BoardNode[][] | null = board.applyMove(selected, col, player.oppoId); // applies the move and returns the new board
         if (newData) {
-            setBoard(newData);
+            if (name === "king") { // if we moved the king update the kings position in player class
+                let copy = player;
+                copy.kingsPos.coords = col.getCoords();
+                setPlayer(copy);
+            }
+            document.querySelectorAll(".checked").forEach((ele: any) => {
+                let newClass = ele.className.replace(/\schecked/, "");
+                return ele.className = newClass;
+            });
+            player.setCheckStatus(false) // check if the oppo move put us in check
+            setBoard(newData); // set the board to the new board
             setSelected(null);
-            removeHighlights();
+            removeHighlights(); // remove all the highlighted nodes
             player.yourTurn = false
             simulateMoveSound();
         };
@@ -48,8 +55,8 @@ export const ChessBoard: React.FC = () => {
             if (char === "r") char += 5;
             if (char === "q") char += 9;
         })
-        return total
-    }
+        return total;
+    };
 
     return (
         <>
@@ -67,16 +74,6 @@ export const ChessBoard: React.FC = () => {
                                 rotateDegree={rotateDegree}
                                 handleMoving={handleMoveing}
                             />
-                            // <div
-
-                            //     onClick={() => selected !== null ? handleMoveing(col) : setSelected(col)}
-                            // >
-                            //     <span
-                            //         className="piece"
-                            //         style={{ color: col.data && col.data.color, transform: `rotate(${rotateDegree}deg)` }}>
-                            //         {col.data && col.data.renderImage}
-                            //     </span>
-                            // </div>
                         ))}
                     </div>
                 ))}

@@ -17,7 +17,6 @@ export class Bishop extends Piece {
     public getLegalMoves = (coords: coords, board: any[][]): legalMovesResult[] => {
         let i: number,
             result: legalMovesResult[] = [];
-        console.log("cords passed", coords);
 
         for (i = 0; i < this.vectors.length; i++) {
             let y: number = coords.y + this.vectors[i].y,

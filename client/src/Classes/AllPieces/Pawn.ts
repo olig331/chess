@@ -78,7 +78,6 @@ export class Pawn extends Piece {
                 // Handle Enpassent as move gen;
                 if(this.inRange(coords.x - 1)){
                     let passant = board[coords.y][coords.x - 1];
-                    console.log(passant.getName(), passant.getColor())
                     if(passant.getName() === "pawn" && passant.getColor() === this.oppoClr[this.color] && passant.data.openForEnPassant){
                         result.push({
                             move:{y:coords.y + this.vectors[0].y, x: coords.x - 1},
@@ -90,7 +89,6 @@ export class Pawn extends Piece {
                             taking: getTag(board[y][x].getName(), board[y][x].getColor())
                         })
                     }
-                    console.log("failed enpassent, -1")
                 }
                 if(this.inRange(coords.x + 1)){
                     let passant = board[coords.y][coords.x + 1];
@@ -105,7 +103,6 @@ export class Pawn extends Piece {
                             taking: getTag(board[y][x].getName(), board[y][x].getColor())
                         })
                     }
-                    console.log("failed enpassent,  + 1")
                 }
             }
         }

@@ -1,6 +1,4 @@
 import React, { useState, useContext } from 'react'
-import { convertToObject } from 'typescript';
-import { Player } from '../../Classes/Player';
 import { PlayerContext, SelectedContext } from '../GameInstance/GameInstance';
 
 interface PassedProps {
@@ -31,7 +29,6 @@ export const Square: React.FC<PassedProps> = ({ col, rowIndex, colIndex, rotateD
     };
     const handleDrop = (e: any) => {
         if (selected === null) return
-        console.log("handleDrop", e.currentTarget.className)
         e.preventDefault();
         e.stopPropagation();
         handleMoving(col)
@@ -41,11 +38,11 @@ export const Square: React.FC<PassedProps> = ({ col, rowIndex, colIndex, rotateD
         if (col.data) {
             if (col.data.color === player.color) {
                 var crt = e.target.cloneNode(true);
-                console.log(crt)
+                crt.style.background = "none"
                 crt.style.position = "absolute"; crt.style.top = "0"; crt.style.right = "0";
                 crt.style.fontSize = "5rem"
                 crt.style.opacity = "1"
-                crt.style.transform = "rotate(0deg) translate(-50%, -50%)";
+                crt.style.transform = "rotate(0deg)";
                 document.body.appendChild(crt);
                 e.dataTransfer.setDragImage(crt, 48, 50);
                 setSelected(col);
@@ -64,10 +61,6 @@ export const Square: React.FC<PassedProps> = ({ col, rowIndex, colIndex, rotateD
             onDragOver={(e) => handleDragOver(e)}
             onDragEnter={(e) => handleDragEnter(e)}
             onDragLeave={(e) => handleDragLeave(e)}
-        // onDrop={(e) => handleDrop(e)}
-        // onMouseDown={(e) => { setSelected(col); set_dragActive("1") }}
-        // draggable="true"
-        // title={dragActive}
         >
             <span
                 onDragStart={(e) => handleDragStart(e)}

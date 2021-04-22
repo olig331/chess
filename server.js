@@ -45,6 +45,10 @@ io.on("connection", socket => {
         const parsedData = JSON.parse(payload)
         io.to(parsedData.toId).emit("recieveMove", JSON.stringify(parsedData.data));
     });
+
+    socket.on("lostTheMatch", id => {
+        io.to(id).emit("youWon")
+    })
 })
 
 

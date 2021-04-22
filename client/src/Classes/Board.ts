@@ -7,7 +7,7 @@ const socket = require("../SocketConnection/Socket").socket;
 export class Board {
     public board: Node[][];
     private static startingPositions: string =
-        "rnbqkbnrpppppppp................................PPPPPPPPRNBQKBNR";
+        "rnbqkbnrpp....pp................................PP....PPR..QKBNR";
 
     constructor() {
         this.board = this.initBoard();
@@ -40,7 +40,6 @@ export class Board {
             let curr:coords = selected.data.moves[i].move,
                 to:coords = newPos.getCoords();
             if(JSON.stringify(curr) === JSON.stringify(to)){ // if the coords in possible moves match the new sqaure allow it
-                console.log(selected.data.moves[i])
                 socket.emit("sendMove", JSON.stringify({toId:oppoId, data:selected.data.moves[i]}));
                 return this.updateTheBoard(selected.data.moves[i]);
             }
@@ -113,12 +112,9 @@ class Node {
             i:number,
             j:number,
             result:legalMovesResult[] = [];
-        console.log("moves get peices moves", moves)
         if (moves) {
             for (i = 0; i < moves.length; i++) {
-                console.log(moves[i])
                 let newBoard = board.getDeepCopy();
-                //console.log("new board",newBoard)
                 let kingDataToPass;
                 if (this.getName() === "king") {
                     kingDataToPass = {

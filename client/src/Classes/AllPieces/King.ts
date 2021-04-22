@@ -44,7 +44,6 @@ export class King extends Piece {
         }
         if (!inCheck) {
             const castleSwap = this.canCastleSwap(coords, board);
-            console.log("castle result", castleSwap);
             if (castleSwap.qside) {
                 result.push({
                     move:{ y: coords.y, x: 2 }, 
