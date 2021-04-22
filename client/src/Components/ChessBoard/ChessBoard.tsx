@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { SelectedContext, BoardContext, PlayerContext, GameContext } from '../GameInstance/GameInstance'
 import { removeHighlights } from '../../HelperFunctions/highlightFunctions';
 import { simulateMoveSound } from '../../HelperFunctions/triggerAudio';
+import { Square } from './Square';
 
 export const ChessBoard: React.FC = () => {
 
@@ -19,13 +20,14 @@ export const ChessBoard: React.FC = () => {
             return
         }
         return;
-    }, [player])
+    }, [player]);
 
     useEffect(() => {
         console.log("degrees", rotateDegree)
     }, [rotateDegree])
 
     const handleMoveing = (col: any) => {
+        if (!player.yourTurn) return;
         let newData: BoardNode[][] | null = board.applyMove(selected, col, player.oppoId);
         //setSelected(null)
         if (newData) {
@@ -49,24 +51,6 @@ export const ChessBoard: React.FC = () => {
         return total
     }
 
-
-    const handleDragEnter = (e: any) => {
-        e.preventDefault();
-        e.stopPropagation();
-    };
-    const handleDragLeave = (e: any) => {
-        e.preventDefault();
-        e.stopPropagation();
-    };
-    const handleDragOver = (e: any) => {
-        e.preventDefault();
-        e.stopPropagation();
-    };
-    const handleDrop = (e: any) => {
-        e.preventDefault();
-        e.stopPropagation();
-    };
-
     return (
         <>
             {player && <div>white:{getScores(game.fallenPieces.white)} black:{getScores(game.fallenPieces.black)}</div>}
@@ -76,17 +60,23 @@ export const ChessBoard: React.FC = () => {
                 {board.board.map((row: any, rowIndex: number) => (
                     <div key={rowIndex} className={`row ${rowIndex}`}>
                         {row.map((col: any, colIndex: number) => (
-                            <div
-                                key={`${rowIndex}${colIndex}`}
-                                className={`node ${rowIndex}-${colIndex}`}
-                                onClick={() => selected !== null ? handleMoveing(col) : setSelected(col)}
-                            >
-                                <span
-                                    className="piece"
-                                    style={{ color: col.data && col.data.color, transform: `rotate(${rotateDegree}deg)` }}>
-                                    {col.data && col.data.renderImage}
-                                </span>
-                            </div>
+                            <Square
+                                col={col}
+                                colIndex={colIndex}
+                                rowIndex={rowIndex}
+                                rotateDegree={rotateDegree}
+                                handleMoving={handleMoveing}
+                            />
+                            // <div
+
+                            //     onClick={() => selected !== null ? handleMoveing(col) : setSelected(col)}
+                            // >
+                            //     <span
+                            //         className="piece"
+                            //         style={{ color: col.data && col.data.color, transform: `rotate(${rotateDegree}deg)` }}>
+                            //         {col.data && col.data.renderImage}
+                            //     </span>
+                            // </div>
                         ))}
                     </div>
                 ))}
