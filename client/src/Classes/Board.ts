@@ -7,7 +7,7 @@ const socket = require("../SocketConnection/Socket").socket;
 export class Board {
     public board: Node[][];
     private static startingPositions: string =
-        "rnbqkbnrpp....pp................................PP....PPR...K..R";
+        "rnbqkbnrpppppppp................................PPPPPPPPRNBQKBNR";
 
     constructor() {
         this.board = this.initBoard();
