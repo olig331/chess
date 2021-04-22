@@ -32,8 +32,8 @@ io.on("connection", socket => {
             let host = lobbys[lobbyId][0];
             lobbys[lobbyId].push({ id: socket.id, color: otherColor[host.color] });
             lobbyFromSocketId[socket.id] = lobbyId;
-            io.to(socket.id).emit("getMatchData", { oppoId: host.id, color: otherColor[host.color] });
-            io.to(host.id).emit("getMatchData", { oppoId: socket.id, color: host.color })
+            io.to(socket.id).emit("getMatchSetUpData", { oppoId: host.id, color: otherColor[host.color] });
+            io.to(host.id).emit("getMatchSetUpData", { oppoId: socket.id, color: host.color })
         } else {
             let myColor = colors[Math.round(Math.random())];
             lobbys[lobbyId] = [{ id: socket.id, color: myColor }];
