@@ -23,18 +23,13 @@ export const ChessBoard: React.FC = () => {
         return;
     }, [player]);
 
-    useEffect(() => {
-        console.log(board.board)
-    }, [board])
 
     const handleMoveing = (col: any) => {
         if (!player.yourTurn) return; // if its not our turn back out
         const name: string = selected.getName();
         let newData: any | null = board.applyMove(selected, col, player.oppoId); // applies the move and returns the new board
         if (newData) {
-            console.log("newData", newData)
-            console.log(newData.takingTag)
-            game.updateFallenPieces(newData.takingTag)
+            game.updateFallenPieces(newData.takingTag);
             if (name === "king") { // if we moved the king update the kings position in player class
                 let copy = player;
                 copy.kingsPos.coords = col.getCoords();
@@ -56,7 +51,6 @@ export const ChessBoard: React.FC = () => {
     };
 
     const setScores = () => {
-        console.log("fallen Pieces", game.fallenPieces)
         const newScores = {
             "white": getScores(game.fallenPieces.white),
             "black": getScores(game.fallenPieces.black)

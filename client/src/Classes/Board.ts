@@ -34,6 +34,7 @@ export class Board {
         }
         return result;
     };
+
     //prettier-ignore
     public applyMove = (selected:any, newPos:any, oppoId:string):{board:Node[][], takingTag:string} | false => {
         let i:number;
@@ -76,7 +77,6 @@ export class Board {
                 }
             }
         }
-        console.log(this.board);
         return this.board;
     };
 

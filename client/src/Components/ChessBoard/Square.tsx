@@ -58,7 +58,7 @@ export const Square: React.FC<PassedProps> = ({ col, rowIndex, colIndex, rotateD
         <div
             key={`${rowIndex}${colIndex}`}
             className={`node ${rowIndex}-${colIndex}`}
-            onDrop={(e) => handleDrop(e)}
+            onDrop={(e) => { handleDrop(e); set_dragActive("0") }}
             onDragOver={(e) => handleDragOver(e)}
             onDragEnter={(e) => handleDragEnter(e)}
             onDragLeave={(e) => handleDragLeave(e)}

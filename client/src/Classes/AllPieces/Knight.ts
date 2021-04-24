@@ -42,7 +42,6 @@ export class Knight extends Piece {
                 }
             }
         }
-        console.log("knight result", result)
         this.moves = result;
         return result;
     };

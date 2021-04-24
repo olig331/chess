@@ -135,7 +135,7 @@ export class GameInstance extends React.Component<PassedProps> {
         const player = this.state.player;
         const { setPlayer } = this;
         const game = this.state.game;
-
+        console.log("rendering")
         return (
             <>
                 {!this.state.player && <WaitingForPlayer />}

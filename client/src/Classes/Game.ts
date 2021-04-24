@@ -9,7 +9,6 @@ export class Game {
     }
 
     public updateFallenPieces = (tag: string): void => {
-        console.log("tag being sent", tag);
         if (tag.charCodeAt(0) < 91) {
             this.fallenPieces.white.push(tag);
         } else {
