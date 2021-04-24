@@ -18,7 +18,7 @@ export class Pawn extends Piece {
         this.startingRank = color === "white" ? 6 : 1;
         this.endRank = color === "white" ? 0 : 7;
         this.name = this.getName();
-        this.openForEnPassant = true;
+        this.openForEnPassant = false;
     }
 
     public getLegalMoves = (

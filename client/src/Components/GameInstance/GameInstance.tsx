@@ -31,7 +31,7 @@ export class GameInstance extends React.Component<PassedProps> {
 
     componentDidMount() {
         socket.emit("joinedLobby", this.state.lobbyId);
-        socket.on("getMatchData", (payload: { oppoId: string, color: string }) => {
+        socket.on("getMatchSetUpData", (payload: { oppoId: string, color: string }) => {
             this.setState({ player: new Player(payload.color, payload.oppoId), game: new Game() });
             simulateStartSound()
         });
@@ -42,6 +42,7 @@ export class GameInstance extends React.Component<PassedProps> {
             playerCopy.yourTurn = true;
             this.setState({ player: playerCopy });
             this.runRecieveMoveChecks(newBoard)
+            this.state.board.genStringBoardAddToHistory();
         });
         socket.on("youWon", () => {
             this.setGame("won")

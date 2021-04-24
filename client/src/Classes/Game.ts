@@ -8,12 +8,13 @@ export class Game {
         this.winner = null;
     }
 
-    public updateFallenPieces = (tag: string) => {
+    public updateFallenPieces = (tag: string): void => {
+        console.log("tag being sent", tag);
         if (tag.charCodeAt(0) < 91) {
             this.fallenPieces.white.push(tag);
         } else {
             this.fallenPieces.black.push(tag);
         }
-        console.log("fallenpiece after update", this.fallenPieces);
+        return;
     };
 }

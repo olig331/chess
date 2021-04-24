@@ -40,7 +40,7 @@ export class Rook extends Piece {
                     result.push({ 
                         move:{y: y, x: x },
                         effects: [
-                            {coords:{y:y, x:x}, new:this.serialise(this), newProps:null},
+                            {coords:{y:y, x:x}, new:this.serialise(this), newProps:{hasNeverMoved:false}},
                             {coords:{y:coords.y, x:coords.x}, new:null, newProps:null}
                         ],
                         taking: getTag(board[y][x].getName(), board[y][x].getColor())
@@ -50,7 +50,7 @@ export class Rook extends Piece {
                 result.push({ 
                     move:{y: y, x: x },
                     effects: [
-                        {coords:{y:y, x:x}, new:this.serialise(this), newProps:null},
+                        {coords:{y:y, x:x}, new:this.serialise(this), newProps:{hasNeverMoved:false}},
                         {coords:{y:coords.y, x:coords.x}, new:null, newProps:null}
                     ],
                     taking: getTag(board[y][x].getName(), board[y][x].getColor())
