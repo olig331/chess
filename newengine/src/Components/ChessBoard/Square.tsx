@@ -78,6 +78,7 @@ export const Square: React.FC<PassedProps> = ({ board, pos, index, oppoId }) => 
         set_dragActive("1");
         createDragImage(e)
         const moves: string[] = getLegalMoves(board[key], Object.keys(board), board, index);
+        console.log("returned moves", moves)
         moves && moves.forEach((move: string) => {
             document.getElementsByClassName(`node ${move}`)[0].className = `node ${move} highlight`
         })

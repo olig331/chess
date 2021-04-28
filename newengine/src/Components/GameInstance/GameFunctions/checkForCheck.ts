@@ -4,11 +4,13 @@ import { validPos } from "./getLegalMoves";
 const kingCheckVectors = [1, -1, -8, 8, 7, 9, -9, -7, -17, -15, -10, -6, 17, 15, 10, 6];
 
 export const checkForCheck = (board: any, color: string) => {
+    console.log("board passed", board);
     let boardKeys: any = Object.keys(board);
     // prettier-ignore
     let kingTag = color === "white" ? "K" : "k"
     //prettier-ignore
     let king: any = Object.keys(board).filter((key: string) => board[key] === kingTag);
+    console.log("this is king", king);
     let index: any = boardKeys.indexOf(`${king}`);
     let i: number;
     let result: boolean = false;
@@ -84,5 +86,6 @@ export const checkForCheck = (board: any, color: string) => {
             }
         }
     }
+    console.log("this is check for check result", result);
     return result;
 };

@@ -31,5 +31,6 @@ export const kingMoves = (tag: string, boardKeys: Keys, board: Board, boardPos: 
             legalMoves.push(boardKeys[tempSq])
         }
     }
-    return filterByCheck(tag, legalMoves, boardPos);
+    console.log("legalMoves", legalMoves);
+    return filterByCheck(tag, legalMoves, board,boardPos);
 }

@@ -43,5 +43,5 @@ export const freePiecesMoves = (
         }
     }
     console.log("legalMoves", legalMoves);
-    return filterByCheck(tag, legalMoves, boardPos);
+    return filterByCheck(tag, legalMoves, board, boardPos);
 };

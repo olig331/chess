@@ -53,5 +53,6 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
             }
         }
     }
-    return filterByCheck(tag, legalMoves, boardPos);
+    console.log("legalMoves", legalMoves);
+    return filterByCheck(tag, legalMoves, board, boardPos);
 };

@@ -5,25 +5,35 @@ import { knightMoves } from "./Moves/Knights";
 import { kingMoves } from "./Moves/Kings";
 //prettier-ignore
 
-export const getMoves = (tag: string, boardKeys: Keys, board: Board, boardPos:number) => {
+export const getLegalMoves = (tag: string, boardKeys: Keys, board: Board, boardPos:number) => {
     const playerPiece = tag.toLowerCase()
     if(playerPiece === "q" || playerPiece === "b" || playerPiece === "r"){
-        freePiecesMoves(tag, boardKeys, board, boardPos);
+        return freePiecesMoves(tag, boardKeys, board, boardPos);
     }
     if(playerPiece === "p"){
-        pawnsMoves(tag, boardKeys, board, boardPos);
+        return pawnsMoves(tag, boardKeys, board, boardPos);
     }
     if(playerPiece === "n"){
-        knightMoves(tag, boardKeys, board, boardPos);
+        return knightMoves(tag, boardKeys, board, boardPos);
     }
     if(playerPiece === "k"){
-        kingMoves(tag, boardKeys, board, boardPos);
+        return kingMoves(tag, boardKeys, board, boardPos);
     }
+    return [];
 };
 
 //prettier-ignore
-export const filterByCheck = (tag:string, movesList: string[], boardPos: number): string[] => {
-    return [];
+export const filterByCheck = (tag:string, movesList: string[], board:Board, boardPos: number): string[] => {
+    let keys:string[] = Object.keys(board),
+        color:string = tag.charCodeAt(0) < 91 ? "white" : "black"; 
+
+    return movesList.filter((move:string) => {
+        let copy = {...board},
+            oldPos = keys.indexOf(`${boardPos}`);
+        copy[move] = tag;
+        copy[oldPos] = "";
+        return !checkForCheck(copy, color);
+    });
 };
 
 export const getVectors = (tag: string): any => {
