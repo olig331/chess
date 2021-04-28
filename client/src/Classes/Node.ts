@@ -1,6 +1,8 @@
 import { getVectors } from "../HelperFunctions/getVectors";
 import { Board } from "./Board";
 import { Piece } from "./Piece";
+import { getClass } from "../HelperFunctions/getClass";
+import { getTag } from "../HelperFunctions/getTag";
 
 export class Node {
     public y: number;
@@ -43,15 +45,16 @@ export class Node {
 
     //pass in the board class so we can make a deep copy and update the board accoridningly and check for check
     //prettier-ignore
-    public getPiecesMoves = (board: Board, kingData: KingsPos, inCheck:boolean): legalMovesResult[] => {
+    public getPiecesMoves = (board: any[][], deepCopy:any[][], kingData: KingsPos, inCheck:boolean): legalMovesResult[] => {
         //prettier-ignore
-        let moves:legalMovesResult[] = this.data.getLegalMoves({ y: this.y, x: this.x }, board.board, inCheck),
+        let moves:legalMovesResult[] = this.data.getLegalMoves({ y: this.y, x: this.x }, board, inCheck),
             i:number,
             j:number,
             result:legalMovesResult[] = [];
+        
         if (moves) {
             for (i = 0; i < moves.length; i++) {
-                let newBoard = board.getDeepCopy();
+                let newBoard = deepCopy
                 let kingDataToPass;
                 if (this.getName() === "king") {
                     kingDataToPass = {
@@ -62,8 +65,9 @@ export class Node {
                     kingDataToPass = kingData;
                 }
                 for(j = 0; j < moves[i].effects.length; j++){
-                    const curr = moves[i].effects[j]
-                    newBoard[curr.coords.y][curr.coords.x].data = curr.new
+                    const curr = moves[i].effects[j];
+                    const name = curr.new ? curr.new.name : "."
+                    newBoard[curr.coords.y][curr.coords.x].data = getClass(getTag(name));
                 }
 
                 if (!this.checkForKingInCheck(kingDataToPass, newBoard)) {

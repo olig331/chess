@@ -30,22 +30,22 @@ export const Square: React.FC<PassedProps> = ({ col, rowIndex, colIndex, rotateD
     };
     const handleDrop = (e: any) => {
         if (selected === null) return
-        e.preventDefault();
-        e.stopPropagation();
+        // e.preventDefault();
+        // e.stopPropagation();
         handleMoving(col)
         set_dragActive("0")
     };
     const handleDragStart = (e: any) => {
         if (col.data) {
             if (col.data.color === player.color) {
-                var crt = e.target.cloneNode(true);
-                crt.style.background = "none"
-                crt.style.position = "absolute"; crt.style.top = "0"; crt.style.right = "0";
-                crt.style.fontSize = "5rem"
-                crt.style.opacity = "1"
-                crt.style.transform = "rotate(0deg)";
-                document.body.appendChild(crt);
-                e.dataTransfer.setDragImage(crt, 48, 50);
+                // var crt = e.target.cloneNode(true);
+                // crt.style.background = "none"
+                // crt.style.position = "absolute"; crt.style.top = "0"; crt.style.right = "0";
+                // crt.style.fontSize = "5rem"
+                // crt.style.opacity = "1"
+                // crt.style.transform = "rotate(0deg)";
+                // document.body.appendChild(crt);
+                // e.dataTransfer.setDragImage(crt, 48, 50);
                 setSelected(col);
                 set_dragActive("1");
             }
