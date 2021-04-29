@@ -2,13 +2,13 @@ import React from 'react';
 import { ChessBoard } from '../ChessBoard/ChessBoard';
 import { Audio } from '../Audio/Audio'
 import { simulateStartSound } from '../../HelperFunctions/triggerAudio';
+import { checkForCheck } from './GameFunctions/checkForCheck';
 const socket = require('../../SocketConnection/Socket').socket;
 
 interface passedProps {
     history: any;
     match: any
 }
-
 
 const initBoard: { [key: string]: string } = {
     "a8": "r", "b8": "n", "c8": "b", "d8": "q", "e8": "k", "f8": "b", "g8": "n", "h8": "r",
@@ -46,7 +46,21 @@ export class GameInstance extends React.Component<passedProps> {
         socket.on("recieveMove", (newBoard: any) => {
             this.setState({ board: JSON.parse(newBoard) });
             this.setTurn(true)
+            this.handleRecieveMove()
         });
+    }
+
+    public handleRecieveMove = () => {
+        const amIChecked = checkForCheck(this.state.board, this.state.color);
+
+        if (amIChecked) {
+            const kingTag = this.state.color === "white" ? "K" : "k"
+            let pos = Object.keys(this.state.board).filter((key: string) => this.state.board[key] === kingTag);
+            document.getElementsByClassName(`node ${pos[0]}`)[0].className = `node ${pos[0]} checked`
+            // check for checkmate
+        } else {
+            // check for stalemate
+        }
     }
 
     public setFallenPieces = (piece: string) => {

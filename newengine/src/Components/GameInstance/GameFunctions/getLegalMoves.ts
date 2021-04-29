@@ -31,6 +31,7 @@ export const filterByCheck = (tag:string, movesList: MoveArr[], board:Board, boa
         oldPos = keys[boardPos];
             copy[effect.pos] = tag;
             copy[oldPos] = "";
+            console.log("check for check result",checkForCheck(copy, color))
         return !checkForCheck(copy, color);
     }));
 };
