@@ -91,6 +91,11 @@ export class GameInstance extends React.Component<PassedProps> {
         return hasLegalMoves
     }
 
+    public getDeepCopy = (): any[][] => {
+        console.log("deep copy", JSON.parse(JSON.stringify(this.state.board.board)))
+        return JSON.parse(JSON.stringify(this.state.board.board))
+    }
+
     public setSelected = (toSelect: any) => {
         if (toSelect === null || toSelect.data === null || !this.state.player.yourTurn) {
             this.setState({
@@ -98,7 +103,7 @@ export class GameInstance extends React.Component<PassedProps> {
             })
             return;
         }
-        let moves = toSelect.getPiecesMoves(this.state.board, this.state.player.kingsPos, this.state.player.inCheck);
+        let moves = toSelect.getPiecesMoves(this.state.board.board, this.getDeepCopy(), this.state.player.kingsPos, this.state.player.inCheck);
         this.setState({
             selected: toSelect
         });
@@ -135,7 +140,7 @@ export class GameInstance extends React.Component<PassedProps> {
         const player = this.state.player;
         const { setPlayer } = this;
         const game = this.state.game;
-
+        console.log("rendering")
         return (
             <>
                 {!this.state.player && <WaitingForPlayer />}
