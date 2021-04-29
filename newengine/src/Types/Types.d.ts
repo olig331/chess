@@ -5,6 +5,7 @@ type GameState = {
     board: Board;
     castleSwapStatus: CastleStatus;
     fallenPieces: FallenPieces;
+    yourTurn: boolean;
 };
 
 type Board = { [key: string]: string };

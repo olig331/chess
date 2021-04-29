@@ -5,12 +5,13 @@ import { checkForCheck } from '../GameInstance/GameFunctions/checkForCheck';
 interface PassedProps {
     board: { [key: string]: string };
     oppoId: string;
-    castleSwapStatus: CastleStatus
+    castleSwapStatus: CastleStatus,
+    color: string
 };
 
 const MovesContext: any = React.createContext([]);
 
-export const ChessBoard: React.FC<PassedProps> = ({ board, oppoId, castleSwapStatus }) => {
+export const ChessBoard: React.FC<PassedProps> = ({ board, oppoId, castleSwapStatus, color }) => {
 
     const [moves, set_moves] = useState<MoveArr[]>([])
 
@@ -24,6 +25,7 @@ export const ChessBoard: React.FC<PassedProps> = ({ board, oppoId, castleSwapSta
                         index={index}
                         oppoId={oppoId}
                         castleSwapStatus={castleSwapStatus}
+                        color={color}
                     />
                 </MovesContext.Provider>
             ))}

@@ -3,7 +3,7 @@ import { getImage } from '../../HelperFunctions/getImage';
 import { getLegalMoves } from '../GameInstance/GameFunctions/getLegalMoves';
 import { simulateMoveSound } from '../../HelperFunctions/triggerAudio'
 import { MovesContext } from './ChessBoard';
-import { FallenPiecesContext } from '../GameInstance/GameInstance';
+import { FallenPiecesContext, TurnContext } from '../GameInstance/GameInstance';
 const socket = require('../../SocketConnection/Socket').socket;
 
 interface PassedProps {
@@ -11,14 +11,16 @@ interface PassedProps {
     pos: string;
     index: number;
     oppoId: string;
-    castleSwapStatus: CastleStatus
+    castleSwapStatus: CastleStatus;
+    color: string;
 }
 
-export const Square: React.FC<PassedProps> = ({ board, pos, index, oppoId, castleSwapStatus }) => {
+export const Square: React.FC<PassedProps> = ({ board, pos, index, oppoId, castleSwapStatus, color }) => {
 
     const [dragActive, set_dragActive] = useState<string>("0")
     const { moves, set_moves } = useContext(MovesContext);
     const { fallenPieces, setFallenPieces } = useContext(FallenPiecesContext);
+    const { yourTurn, setTurn } = useContext(TurnContext)
 
     const darkSqaure = `radial-gradient(
         circle,
@@ -33,7 +35,7 @@ export const Square: React.FC<PassedProps> = ({ board, pos, index, oppoId, castl
         rgba(100, 115, 129, 1) 100%
     )`
 
-    const getColor = (index: number) => {
+    const getSqaureColor = (index: number) => {
         let row = Math.ceil(index / 8)
         if (row % 2) {
             if (index % 2) {
@@ -76,15 +78,29 @@ export const Square: React.FC<PassedProps> = ({ board, pos, index, oppoId, castl
         e.dataTransfer.setDragImage(crt, 45, 50);
     }
 
+    const getPieceColor = (piece: string) => {
+        if (piece) {
+            if (piece.charCodeAt(0) < 91) {
+                return "white"
+            } else {
+                return "black"
+            }
+        }
+        return
+    }
+
     const handleMove = (e: any, key: string, index: number) => {
-        set_dragActive("1"); // when the val is 1 the original piece will be hidden and the only the drag piece will be visiible
-        createDragImage(e); // Create the draggable image
-        const moves: MoveArr[] = getLegalMoves(board[key], Object.keys(board), board, index, castleSwapStatus); // returns an array of all aquares we can move to
-        moves && moves.forEach((move: MoveArr) => {
-            document.getElementsByClassName(`node ${move.effects[0].pos}`)[0].className = `node ${move.effects[0].pos} highlight`
-        }) // this function just highlights all the squares the selected piece can move to
-        set_moves(moves) // add the moves to state
+        if (yourTurn && getPieceColor(board[key]) === color) {
+            set_dragActive("1"); // when the val is 1 the original piece will be hidden and the only the drag piece will be visiible
+            createDragImage(e); // Create the draggable image
+            const moves: MoveArr[] = getLegalMoves(board[key], Object.keys(board), board, index, castleSwapStatus); // returns an array of all aquares we can move to
+            moves && moves.forEach((move: MoveArr) => {
+                document.getElementsByClassName(`node ${move.effects[0].pos}`)[0].className = `node ${move.effects[0].pos} highlight`
+            }) // this function just highlights all the squares the selected piece can move to
+            set_moves(moves) // add the moves to state
+        }
         // set the piece we are moving to state
+        return;
     }
 
     const handleDrop = (e: any, key: any) => {
@@ -102,6 +118,7 @@ export const Square: React.FC<PassedProps> = ({ board, pos, index, oppoId, castl
                 removeHighlights()
                 simulateMoveSound()
                 socket.emit("sendMove", JSON.stringify({ oppoId: oppoId, data: board }));
+                setTurn(false)
             } else {
                 removeHighlights()
                 return;
@@ -121,7 +138,7 @@ export const Square: React.FC<PassedProps> = ({ board, pos, index, oppoId, castl
             onDragStart={(e) => handleMove(e, pos, index)}
             onDragEnd={() => set_dragActive("0")}
             key={index}
-            style={{ background: getColor(index + 1) }}
+            style={{ background: getSqaureColor(index + 1) }}
             className={`node ${pos}`}>
             <span data-active={dragActive} className="img_parent">{getImage(board[pos])}</span>
             {pos}
