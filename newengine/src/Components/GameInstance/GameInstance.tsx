@@ -21,13 +21,17 @@ const initBoard: { [key: string]: string } = {
     "a1": "R", "b1": "N", "c1": "B", "d1": "Q", "e1": "K", "f1": "B", "g1": "N", "h1": "R"
 };
 
+const FallenPiecesContext: any = React.createContext({})
+
 export class GameInstance extends React.Component<passedProps> {
 
     state: GameState = {
         lobbyId: this.props.match.params.lobbyId,
         oppoId: "",
         color: "",
-        board: initBoard
+        board: initBoard,
+        castleSwapStatus: { "qside": true, "kside": true },
+        fallenPieces: { "white": [], "black": [] }
     }
 
     componentDidMount() {
@@ -41,15 +45,35 @@ export class GameInstance extends React.Component<passedProps> {
         });
     }
 
+    public setFallenPieces = (piece: string) => {
+        let fallenPiecesCopy = { ...this.state.fallenPieces }
+        if (piece.charCodeAt(0) < 91) {
+            fallenPiecesCopy.white.push(piece)
+        } else {
+            fallenPiecesCopy.black.push(piece)
+        }
+        this.setState({
+            fallenPieces: fallenPiecesCopy
+        });
+    };
+
     render() {
+        const fallenPieces = this.state.fallenPieces;
+        const { setFallenPieces } = this;
         return (
             <>
-                <ChessBoard
-                    board={this.state.board}
-                    oppoId={this.state.oppoId}
-                />
+                <FallenPiecesContext.Provider value={{ fallenPieces, setFallenPieces }}>
+                    <ChessBoard
+                        board={this.state.board}
+                        oppoId={this.state.oppoId}
+                        castleSwapStatus={this.state.castleSwapStatus}
+                    />
+                </FallenPiecesContext.Provider>
                 <Audio />
+                <button onClick={() => console.log(this.state.fallenPieces)}>Log Fallen Pieces</button>
             </>
         )
     }
 }
+
+export { FallenPiecesContext }

@@ -3,10 +3,10 @@ import { getVectors } from "../getLegalMoves";
 import { filterByCheck } from "../getLegalMoves";
 
 //prettier-ignore
-export const knightMoves = (tag: string, boardKeys: Keys, board: Board, boardPos: number):string[] => {
+export const knightMoves = (tag: string, boardKeys: Keys, board: Board, boardPos: number):MoveArr[] => {
     const vectors = getVectors(tag)
     let i: number,
-        legalMoves: string[] = [],
+        legalMoves: MoveArr[] = [],
         color = tag.charCodeAt(0) < 91 ? "white" : "black";
 
     for( i =0; i < vectors.length; i++) {
@@ -25,20 +25,39 @@ export const knightMoves = (tag: string, boardKeys: Keys, board: Board, boardPos
                 }
                 if(color === "white"){
                     if(piece.charCodeAt(0) > 91){
-                        legalMoves.push(boardKeys[tempSq]);
+                        
+                        legalMoves.push({
+                            effects:[
+                                {pos:boardKeys[tempSq], piece:tag},
+                                {pos:boardKeys[boardPos], piece:""}
+                            ],
+                            taking:piece
+                        });
                     }
                     continue;
                 }
                 if(color === "black"){
                     if(piece.charCodeAt(0) < 91){
-                        legalMoves.push(boardKeys[tempSq])
+                        legalMoves.push({
+                            effects:[
+                                {pos:boardKeys[tempSq], piece:tag},
+                                {pos:boardKeys[boardPos], piece:""}
+                            ],
+                            taking:piece
+                        });
+                        continue;
                     }
-                    continue;
                 }
             }
-            legalMoves.push(boardKeys[tempSq])
+            legalMoves.push({
+                effects:[
+                    {pos:boardKeys[tempSq], piece:tag},
+                    {pos:boardKeys[boardPos], piece:""}
+                ],
+                taking:""
+            })
         }
-    }
-    console.log("legalMoves", legalMoves);
+    };
+    console.log("knight moves",legalMoves)
     return filterByCheck(tag, legalMoves, board, boardPos);
-};
+}

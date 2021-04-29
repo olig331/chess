@@ -2,15 +2,11 @@ import { validPos } from "../getLegalMoves";
 import { getVectors } from "../getLegalMoves";
 import { filterByCheck } from "../getLegalMoves";
 
-export const freePiecesMoves = (
-    tag: string,
-    boardKeys: Keys,
-    board: Board,
-    boardPos: number
-): string[] => {
+// prettier-ignore
+export const freePiecesMoves = (tag: string,boardKeys: Keys,board: Board,boardPos: number): MoveArr[] => {
     const vectors: number[] = getVectors(tag);
     let i: number,
-        legalMoves: string[] = [],
+        legalMoves: MoveArr[] = [],
         color: string = tag.charCodeAt(0) < 91 ? "white" : "black";
 
     for (i = 0; i < vectors.length; i++) {
@@ -28,20 +24,37 @@ export const freePiecesMoves = (
             } // if the piece is a king we break;
             if (piece && color === "white") {
                 if (piece.charCodeAt(0) > 91) {
-                    legalMoves.push(boardKeys[tempSq]);
+                    legalMoves.push({
+                        effects: [
+                            { pos: boardKeys[tempSq], piece: tag },
+                            { pos: boardKeys[boardPos], piece: "" },
+                        ],
+                        taking: piece,
+                    });
                 }
                 break;
             }
             if (piece && color === "black") {
                 if (piece.charCodeAt(0) < 91) {
-                    legalMoves.push(boardKeys[tempSq]);
+                    legalMoves.push({
+                        effects: [
+                            { pos: boardKeys[tempSq], piece: tag },
+                            { pos: boardKeys[boardPos], piece: "" },
+                        ],
+                        taking: piece,
+                    });
                 }
                 break;
             }
-            legalMoves.push(boardKeys[tempSq]);
+            legalMoves.push({
+                effects: [
+                    { pos: boardKeys[tempSq], piece: tag },
+                    { pos: boardKeys[boardPos], piece: "" },
+                ],
+                taking: "piece",
+            });
             tempSq += vectors[i];
         }
     }
-    console.log("legalMoves", legalMoves);
     return filterByCheck(tag, legalMoves, board, boardPos);
 };

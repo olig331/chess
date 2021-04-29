@@ -3,10 +3,10 @@ import { getVectors } from "../getLegalMoves";
 import { filterByCheck } from "../getLegalMoves";
 
 //prettier-ignore
-export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:number) => {
+export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:number):MoveArr[] => {
     const vectors = getVectors(tag);
     let i:number,
-        legalMoves:string[] = [],
+        legalMoves:MoveArr[] = [],
         color = tag.charCodeAt(0) < 91 ? "white" : "black";
     
     for(i = 0; i < vectors.length; i++){
@@ -24,13 +24,25 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
                 if(piece){
                     if(color === "white"){
                         if(piece.charCodeAt(0) > 91){
-                            legalMoves.push(boardKeys[tempSq])
+                            legalMoves.push({
+                                effects:[
+                                    {pos:boardKeys[tempSq], piece:tag},
+                                    {pos:boardKeys[boardPos], piece:""}
+                                ],
+                                taking:piece
+                            });
                         }
                         continue;
                     }
                     if(color === "black"){
                         if(piece.charCodeAt(0) < 91){
-                            legalMoves.push(boardKeys[tempSq])
+                            legalMoves.push({
+                                effects:[
+                                    {pos:boardKeys[tempSq], piece:tag},
+                                    {pos:boardKeys[boardPos], piece:""}
+                                ],
+                                taking:piece
+                            });
                         }
                         continue;
                     }
@@ -39,20 +51,37 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
             }   
             if(i > 1){ // moving forward
                 if(!piece){
-                    legalMoves.push(boardKeys[tempSq])
+                    legalMoves.push({
+                        effects:[
+                            {pos:boardKeys[tempSq], piece:tag},
+                            {pos:boardKeys[boardPos], piece:""}
+                        ],
+                        taking:""
+                    });
                 }
-                let doubleMove = boardKeys[tempSq + vectors[i]];
+                let doubleMove:number = tempSq + vectors[i];
                 if(!piece && !board[doubleMove]){   
                     if(color === "white" && Math.floor(boardPos / 8) === 6){ // check they are on their starting ranks (0 indexed)
-                        legalMoves.push(doubleMove)
+                        legalMoves.push({
+                            effects:[
+                                {pos:boardKeys[doubleMove], piece:tag},
+                                {pos:boardKeys[boardPos], piece:""}
+                            ],
+                            taking:""
+                        });
                     }
                     if(color === "black" && Math.floor(boardPos / 8) === 1){ // check they are on their starting ranks (0 indexed)
-                        legalMoves.push(doubleMove)
+                        legalMoves.push({
+                            effects:[
+                                {pos:boardKeys[doubleMove], piece:tag},
+                                {pos:boardKeys[boardPos], piece:""}
+                            ],
+                            taking:""
+                        });
                     }
                 }
             }
         }
     }
-    console.log("legalMoves", legalMoves);
     return filterByCheck(tag, legalMoves, board, boardPos);
 };

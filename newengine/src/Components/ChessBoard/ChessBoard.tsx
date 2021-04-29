@@ -5,28 +5,26 @@ import { checkForCheck } from '../GameInstance/GameFunctions/checkForCheck';
 interface PassedProps {
     board: { [key: string]: string };
     oppoId: string;
+    castleSwapStatus: CastleStatus
 };
 
 const MovesContext: any = React.createContext([]);
-const PieceContext: any = React.createContext({});
 
-export const ChessBoard: React.FC<PassedProps> = ({ board, oppoId }) => {
+export const ChessBoard: React.FC<PassedProps> = ({ board, oppoId, castleSwapStatus }) => {
 
-    const [moves, set_moves] = useState<string[]>([])
-    const [piece, set_piece] = useState<{ [key: string]: string }>({ old: "", piece: "" })
+    const [moves, set_moves] = useState<MoveArr[]>([])
 
     return (
         <div className="board_wrapper">
             {Object.keys(board).map((key: string, index: number) => (
                 <MovesContext.Provider value={{ moves, set_moves }}>
-                    <PieceContext.Provider value={{ piece, set_piece }}>
-                        <Square
-                            board={board}
-                            pos={key}
-                            index={index}
-                            oppoId={oppoId}
-                        />
-                    </PieceContext.Provider>
+                    <Square
+                        board={board}
+                        pos={key}
+                        index={index}
+                        oppoId={oppoId}
+                        castleSwapStatus={castleSwapStatus}
+                    />
                 </MovesContext.Provider>
             ))}
             <button onClick={() => checkForCheck(board, "white")}>Check for check</button>
@@ -34,4 +32,4 @@ export const ChessBoard: React.FC<PassedProps> = ({ board, oppoId }) => {
     )
 }
 
-export { MovesContext, PieceContext }
+export { MovesContext }

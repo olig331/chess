@@ -2,7 +2,8 @@ import React, { useContext, useState } from 'react'
 import { getImage } from '../../HelperFunctions/getImage';
 import { getLegalMoves } from '../GameInstance/GameFunctions/getLegalMoves';
 import { simulateMoveSound } from '../../HelperFunctions/triggerAudio'
-import { MovesContext, PieceContext } from './ChessBoard';
+import { MovesContext } from './ChessBoard';
+import { FallenPiecesContext } from '../GameInstance/GameInstance';
 const socket = require('../../SocketConnection/Socket').socket;
 
 interface PassedProps {
@@ -10,13 +11,14 @@ interface PassedProps {
     pos: string;
     index: number;
     oppoId: string;
+    castleSwapStatus: CastleStatus
 }
 
-export const Square: React.FC<PassedProps> = ({ board, pos, index, oppoId }) => {
+export const Square: React.FC<PassedProps> = ({ board, pos, index, oppoId, castleSwapStatus }) => {
 
     const [dragActive, set_dragActive] = useState<string>("0")
-    const { moves, set_moves } = useContext(MovesContext)
-    const { piece, set_piece } = useContext(PieceContext)
+    const { moves, set_moves } = useContext(MovesContext);
+    const { fallenPieces, setFallenPieces } = useContext(FallenPiecesContext);
 
     const darkSqaure = `radial-gradient(
         circle,
@@ -75,25 +77,27 @@ export const Square: React.FC<PassedProps> = ({ board, pos, index, oppoId }) => 
     }
 
     const handleMove = (e: any, key: string, index: number) => {
-        set_dragActive("1");
-        createDragImage(e)
-        const moves: string[] = getLegalMoves(board[key], Object.keys(board), board, index);
-        console.log("returned moves", moves)
-        moves && moves.forEach((move: string) => {
-            document.getElementsByClassName(`node ${move}`)[0].className = `node ${move} highlight`
-        })
-        set_moves(moves)
-        set_piece({ pos: key, piece: board[key] });
+        set_dragActive("1"); // when the val is 1 the original piece will be hidden and the only the drag piece will be visiible
+        createDragImage(e); // Create the draggable image
+        const moves: MoveArr[] = getLegalMoves(board[key], Object.keys(board), board, index, castleSwapStatus); // returns an array of all aquares we can move to
+        moves && moves.forEach((move: MoveArr) => {
+            document.getElementsByClassName(`node ${move.effects[0].pos}`)[0].className = `node ${move.effects[0].pos} highlight`
+        }) // this function just highlights all the squares the selected piece can move to
+        set_moves(moves) // add the moves to state
+        // set the piece we are moving to state
     }
 
     const handleDrop = (e: any, key: any) => {
         set_dragActive("0")
         if (moves.length > 0) {
-            let possible = moves.filter((move: any) => move === key)
+            let possible = moves.filter((move: any) => move.effects[0].pos === key)
             if (possible.length > 0) {
-                board[possible[0]] = piece.piece
-                board[piece.pos] = ""
-                set_piece({ pos: "", piece: "" })
+                possible.map((move: MoveArr) => {
+                    setFallenPieces(move.taking)
+                    move.effects.map((effect: Effects) => {
+                        return board[effect.pos] = effect.piece;
+                    })
+                })
                 set_moves([])
                 removeHighlights()
                 simulateMoveSound()

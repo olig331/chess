@@ -43,7 +43,6 @@ io.on("connection", socket => {
 
     socket.on("sendMove", payload => {
         const parsedData = JSON.parse(payload)
-        console.log("data in send move", parsedData)
         io.to(parsedData.oppoId).emit("recieveMove", JSON.stringify(parsedData.data));
     });
 
