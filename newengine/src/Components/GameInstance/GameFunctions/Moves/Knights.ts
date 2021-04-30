@@ -25,7 +25,6 @@ export const knightMoves = (tag: string, boardKeys: Keys, board: Board, boardPos
                 }
                 if(color === "white"){
                     if(piece.charCodeAt(0) > 91){
-                        
                         legalMoves.push({
                             effects:[
                                 {pos:boardKeys[tempSq], piece:tag},
@@ -45,8 +44,8 @@ export const knightMoves = (tag: string, boardKeys: Keys, board: Board, boardPos
                             ],
                             taking:piece
                         });
-                        continue;
                     }
+                    continue;
                 }
             }
             legalMoves.push({

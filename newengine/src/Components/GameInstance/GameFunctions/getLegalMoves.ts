@@ -25,15 +25,27 @@ export const getLegalMoves = (tag: string, boardKeys: Keys, board: Board, boardP
 //prettier-ignore
 export const filterByCheck = (tag:string, movesList: MoveArr[], board:Board, boardPos: number): MoveArr[] => {
     let keys:string[] = Object.keys(board),
-        color:string = tag.charCodeAt(0) < 91 ? "white" : "black"; 
-    return movesList.filter((move:MoveArr) => move.effects.map((effect:Effects) => {
-        let copy = {...board},
-        oldPos = keys[boardPos];
-            copy[effect.pos] = tag;
-            copy[oldPos] = "";
-            console.log("check for check result",checkForCheck(copy, color))
-        return !checkForCheck(copy, color);
-    }));
+        color:string = tag.charCodeAt(0) < 91 ? "white" : "black",
+        i:number,
+        finalResult: MoveArr[] = []
+
+    for(i = 0; i < movesList.length; i++){
+        let curr = movesList[i],
+            copy = {...board},
+            j:number;
+        for(j =0; j < curr.effects.length; j++){
+            let effect = curr.effects[j];
+            console.log(copy)
+            copy[effect.pos] = effect.piece
+            console.log("after",copy)
+            if(!checkForCheck(copy, color)){
+                finalResult.push(movesList[i])
+            }
+        }   
+
+    }
+    console.log("final result", finalResult)
+    return finalResult;
 };
 
 export const getVectors = (tag: string): any => {
