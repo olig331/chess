@@ -6,18 +6,24 @@ interface PassedProps {
     oppoId: string;
     castleSwapStatus: CastleStatus,
     color: string;
-    setUpgrade: (val: boolean, move: any) => void
+    setUpgrade: (val: boolean, move: MoveArr) => void
+    updatePieces: () => void;
 };
 
 const MovesContext: any = React.createContext([]);
 
-export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, color, setUpgrade }) => {
+export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, color, setUpgrade, updatePieces }) => {
 
     const [moves, set_moves] = useState<MoveArr[]>([])
     const { board } = useContext(BoardContext);
 
     return (
-        <div className="board_wrapper" style={color === "black" ? { transform: "rotate(180deg)" } : { transform: "rotate(0deg)" }}>
+        <div
+            className="board_wrapper"
+            style={color === "black"
+                ? { transform: "rotate(180deg)" }
+                : { transform: "rotate(0deg)" }}
+        >
             {Object.keys(board).map((key: string, index: number) => (
                 <MovesContext.Provider value={{ moves, set_moves }}>
                     <Square
@@ -27,6 +33,7 @@ export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, co
                         castleSwapStatus={castleSwapStatus}
                         color={color}
                         setUpgrade={setUpgrade}
+                        updatePieces={updatePieces}
                     />
                 </MovesContext.Provider>
             ))}

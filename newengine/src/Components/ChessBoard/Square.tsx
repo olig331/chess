@@ -2,6 +2,9 @@ import React, { useContext, useState } from 'react'
 import { getImage } from '../../HelperFunctions/getImage';
 import { getLegalMoves } from '../GameInstance/GameFunctions/getLegalMoves';
 import { simulateMoveSound } from '../../HelperFunctions/triggerAudio'
+import { getPieceColor, getSqaureColor } from '../GameInstance/GameFunctions/getPiecesColor';
+import { createDragImage } from '../GameInstance/GameFunctions/createDragImage';
+import { removeHighlights } from '../GameInstance/GameFunctions/highlightFunctions';
 import { MovesContext } from './ChessBoard';
 import { BoardContext, FallenPiecesContext, TurnContext, EnpassantContext } from '../GameInstance/GameInstance';
 const socket = require('../../SocketConnection/Socket').socket;
@@ -12,10 +15,11 @@ interface PassedProps {
     oppoId: string;
     castleSwapStatus: CastleStatus;
     color: string;
-    setUpgrade: (val: boolean, move: any) => void
+    setUpgrade: (val: boolean, move: MoveArr) => void
+    updatePieces: () => void
 }
 
-export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapStatus, color, setUpgrade }) => {
+export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapStatus, color, setUpgrade, updatePieces }) => {
 
     const [dragActive, set_dragActive] = useState<string>("0")
     const { moves, set_moves } = useContext(MovesContext);
@@ -24,79 +28,20 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
     const { board, setBoard } = useContext(BoardContext)
     const { enpassant } = useContext(EnpassantContext);
 
-    const darkSqaure = `radial-gradient(
-        circle,
-        rgba(78, 90, 101, 1) 0%,
-        rgba(65, 75, 84, 1) 100%
-    )`
-
-    // Color of the lighter board sqaures
-    const lightSqare = `radial-gradient(
-        circle,
-        rgba(111, 128, 144, 1) 0%,
-        rgba(100, 115, 129, 1) 100%
-    )`
-
-    const getSqaureColor = (index: number) => {
-        let row = Math.ceil(index / 8)
-        if (row % 2) {
-            if (index % 2) {
-                return lightSqare
-            }
-            return darkSqaure
-        } else {
-            if (index % 2) {
-                return darkSqaure
-            }
-            return lightSqare
-        }
-    }
-
-    const handleDragEnter = (e: any) => {
+    const handleDragEnter = (e: SquareEvent): void => {
         e.preventDefault();
         e.stopPropagation();
     };
-    const handleDragLeave = (e: any) => {
+    const handleDragLeave = (e: SquareEvent): void => {
         e.preventDefault();
         e.stopPropagation();
     };
-    const handleDragOver = (e: any) => {
+    const handleDragOver = (e: SquareEvent): void => {
         e.preventDefault();
         e.stopPropagation();
     };
 
-    const removeHighlights = () => {
-        document.querySelectorAll(".highlight").forEach((ele: any) => {
-            let newClass: string = ele.className.replace(/\shighlight/, "");
-            return ele.className = newClass
-        })
-        document.querySelectorAll(".checked").forEach((ele: any) => {
-            let newClass: string = ele.className.replace(/\schecked/, "");
-            return ele.className = newClass
-        })
-    }
-    const createDragImage = (e: any) => {
-        var crt = e.target.cloneNode(true);
-        crt.style.background = "none"
-        crt.style.position = "absolute"; crt.style.top = "0px"; crt.style.right = "0px";
-        crt.style.width = "85px"; crt.style.height = "85px"; crt.style.transform = "rotate(0deg)";
-        crt.style.zIndex = "-1"
-        document.body.appendChild(crt)
-        e.dataTransfer.setDragImage(crt, 45, 50);
-    }
-
-    const getPieceColor = (piece: string) => {
-        if (piece) {
-            if (piece.charCodeAt(0) < 91) {
-                return "white"
-            } else {
-                return "black"
-            }
-        }
-        return
-    }
-
-    const handleMove = (e: any, key: string, index: number) => {
+    const handleMove = (e: SquareEvent, key: string, index: number): void => {
         if (yourTurn && getPieceColor(board[key]) === color) {
             set_dragActive("1"); // when the val is 1 the original piece will be hidden and the only the drag piece will be visiible
             createDragImage(e); // Create the draggable image
@@ -111,24 +56,23 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
         return;
     }
 
-    const handleDrop = (e: any, key: any) => {
+    const handleDrop = (e: SquareEvent, key: string): void => {
         set_dragActive("0")
         if (moves.length > 0) {
-            let possible = moves.filter((move: any) => move.effects[0].pos === key),
-                move = possible[0];
-            console.log("this is move", move)
+            let possible: MoveArr[] = moves.filter((move: any) => move.effects[0].pos === key),
+                move: MoveArr = possible[0];
             if (move && move.hasOwnProperty("upgrade") && move.upgrade) {
                 setUpgrade(true, move);
                 removeHighlights();
                 return;
             }
             if (possible.length > 0) {
-                let copy = { ...board };
+                let copy: Board = { ...board };
                 for (let i: number = 0; i < move.effects.length; i++) {
-                    let curr = move.effects[i];
+                    let curr: Effects = move.effects[i];
                     copy[curr.pos] = curr.piece;
                 }
-                let enpassantData: string = move.hasOwnProperty("enpassant") ? move.enpassant : "";
+                let enpassantData: any = move.hasOwnProperty("enpassant") ? move.enpassant : "";
                 setFallenPieces(move.taking)
                 setBoard(copy)
                 set_moves([])
@@ -136,24 +80,19 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
                 simulateMoveSound()
                 socket.emit("sendMove", JSON.stringify({ oppoId: oppoId, data: copy, enpassant: enpassantData }));
                 setTurn(false)
-            } else {
-                removeHighlights()
-                return;
             }
-            removeHighlights()
-            return;
         }
-        removeHighlights()
-
+        removeHighlights();
         return;
     };
+
     return (
         <div
-            onDrop={(e) => { handleDrop(e, pos) }}
-            onDragOver={(e) => handleDragOver(e)}
-            onDragEnter={(e) => handleDragEnter(e)}
-            onDragLeave={(e) => handleDragLeave(e)}
-            onDragStart={(e) => handleMove(e, pos, index)}
+            onDrop={(e: SquareEvent) => { handleDrop(e, pos) }}
+            onDragOver={(e: SquareEvent) => handleDragOver(e)}
+            onDragEnter={(e: SquareEvent) => handleDragEnter(e)}
+            onDragLeave={(e: SquareEvent) => handleDragLeave(e)}
+            onDragStart={(e: SquareEvent) => handleMove(e, pos, index)}
             onDragEnd={() => set_dragActive("0")}
             key={index}
             style={color === "black" ? { transform: "rotate(180deg)", background: getSqaureColor(index + 1) } : { transform: "rotate(0deg)", background: getSqaureColor(index + 1) }}

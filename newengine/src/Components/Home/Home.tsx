@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { v1 as uuid } from 'uuid';
 
 interface PassedProps {

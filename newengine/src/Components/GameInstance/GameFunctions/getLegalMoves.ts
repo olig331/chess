@@ -40,7 +40,6 @@ export const filterByCheck = (tag:string, movesList: MoveArr[], board:Board): Mo
             finalResult.push(movesList[i])
         }
     }
-    console.log(finalResult)
     return finalResult;
 };
 

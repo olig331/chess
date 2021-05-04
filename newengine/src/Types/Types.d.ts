@@ -9,6 +9,7 @@ type GameState = {
     enpassant: string;
     upgrade: boolean;
     upgradeData: any;
+    yourPieces: string[];
 };
 
 type Board = { [key: string]: string };
@@ -21,5 +22,14 @@ type MoveArr = {
     upgrade?: boolean;
 };
 
+type MovePayload = {
+    newBoard: Board;
+    enpassant: string;
+};
+
+type SetUpData = { [key: string]: string };
+
 type Effects = { [key: string]: string };
 type FallenPieces = { [key: string]: string[] };
+
+type SquareEvent = React.FormEvent<HTMLDivElement>;

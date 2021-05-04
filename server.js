@@ -49,7 +49,9 @@ io.on("connection", socket => {
     socket.on("lostTheMatch", id => {
         io.to(id).emit("youWon")
     })
-    socket.on("stalemate", id => {
+
+
+    socket.on("drawnGame", id => {
         io.to(id).emit("stalemate")
     })
 })
