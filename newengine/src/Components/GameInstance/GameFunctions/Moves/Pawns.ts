@@ -7,7 +7,9 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
     const vectors = getVectors(tag);
     let i:number,
         legalMoves:MoveArr[] = [],
-        color = tag.charCodeAt(0) < 91 ? "white" : "black";
+        color = tag.charCodeAt(0) < 91 ? "white" : "black",
+        endRank = color === "white" ? 8 : 1;
+        
     
     for(i = 0; i < vectors.length; i++){
         let tempSq = boardPos + vectors[i];
@@ -28,7 +30,8 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
                                     {pos:boardKeys[tempSq], piece:tag},
                                     {pos:boardKeys[boardPos], piece:""}
                                 ],
-                                taking:piece
+                                taking:piece,
+                                upgrade: parseInt(boardKeys[tempSq].split("")[1]) === endRank ? true : false
                             });
                         }
                         continue;
@@ -40,7 +43,8 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
                                     {pos:boardKeys[tempSq], piece:tag},
                                     {pos:boardKeys[boardPos], piece:""}
                                 ],
-                                taking:piece
+                                taking:piece,
+                                upgrade: parseInt(boardKeys[tempSq].split("")[1]) === endRank ? true : false
                             });
                         }
                         continue;
@@ -55,7 +59,8 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
                             {pos:boardKeys[tempSq], piece:tag},
                             {pos:boardKeys[boardPos], piece:""}
                         ],
-                        taking:""
+                        taking:"",
+                        upgrade: parseInt(boardKeys[tempSq].split("")[1]) === endRank ? true : false
                     });
                 }
                 let doubleMove:string = boardKeys[tempSq + vectors[i]];
@@ -84,8 +89,6 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
             }
         }
         // enpassent
-        console.log("enpassant in pawns", enpassant)
-        console.log("check pos ", boardKeys[boardPos - 1])
         if(boardKeys[boardPos - 1] === enpassant){
             legalMoves.push({
                 effects:[

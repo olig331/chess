@@ -1,8 +1,10 @@
 import React from 'react';
 import { ChessBoard } from '../ChessBoard/ChessBoard';
 import { Audio } from '../Audio/Audio'
-import { simulateStartSound } from '../../HelperFunctions/triggerAudio';
+import { simulateStartSound, simulateMoveSound } from '../../HelperFunctions/triggerAudio';
 import { checkForCheck } from './GameFunctions/checkForCheck';
+import { PawnUpgrade } from './PawnUpgrade';
+
 const socket = require('../../SocketConnection/Socket').socket;
 
 interface passedProps {
@@ -17,7 +19,7 @@ const initBoard: { [key: string]: string } = {
     "a5": "", "b5": "", "c5": "", "d5": "", "e5": "", "f5": "", "g5": "", "h5": "",
     "a4": "", "b4": "", "c4": "", "d4": "", "e4": "", "f4": "", "g4": "", "h4": "",
     "a3": "", "b3": "", "c3": "", "d3": "", "e3": "", "f3": "", "g3": "", "h3": "",
-    "a2": "P", "b2": "P", "c2": "", "d2": "", "e2": "", "f2": "P", "g2": "P", "h2": "P",
+    "a2": "P", "b2": "P", "c2": "P", "d2": "P", "e2": "P", "f2": "P", "g2": "P", "h2": "P",
     "a1": "R", "b1": "N", "c1": "B", "d1": "Q", "e1": "K", "f1": "B", "g1": "N", "h1": "R"
 };
 
@@ -36,7 +38,9 @@ export class GameInstance extends React.Component<passedProps> {
         castleSwapStatus: { "qside": true, "kside": true },
         fallenPieces: { "white": [], "black": [] },
         yourTurn: true,
-        enpassant: ""
+        enpassant: "",
+        upgrade: false,
+        upgradeData: ""
     }
 
     componentDidMount() {
@@ -93,6 +97,26 @@ export class GameInstance extends React.Component<passedProps> {
         this.setState({ board: newBoard });
     }
 
+    public selectUpgradePiece = (piece: string): void => {
+        let i: number,
+            copy = { ...this.state.board },
+            data = this.state.upgradeData;
+        data.effects[0].piece = piece
+        for (i = 0; i < data.effects.length; i++) {
+            let curr = data.effects[i];
+            copy[curr.pos] = curr.piece;
+        };
+        this.setFallenPieces(data.taking);
+        this.setState({ board: copy, upgrade: false, upgradeData: "", moves: [], yourTurn: false });
+        simulateMoveSound()
+        socket.emit("sendMove", JSON.stringify({ oppoId: this.state.oppoId, data: copy, enpassant: "" }));
+        return
+    }
+
+    public setUpgrade = (val: boolean, move: any) => {
+        this.setState({ upgrade: val, upgradeData: move })
+    }
+
     render() {
         const fallenPieces = this.state.fallenPieces;
         const { setFallenPieces } = this;
@@ -112,6 +136,7 @@ export class GameInstance extends React.Component<passedProps> {
                                     oppoId={this.state.oppoId}
                                     castleSwapStatus={this.state.castleSwapStatus}
                                     color={this.state.color}
+                                    setUpgrade={this.setUpgrade}
                                 />
                             </EnpassantContext.Provider>
                         </BoardContext.Provider>
@@ -120,6 +145,13 @@ export class GameInstance extends React.Component<passedProps> {
                 <Audio />
                 <div>White:{this.state.fallenPieces.white} - Black:{this.state.fallenPieces.black}</div>
                 <button onClick={() => console.log(this.state.board)}>Board</button>
+
+                {this.state.upgrade &&
+                    <PawnUpgrade
+                        selectUpgradePiece={this.selectUpgradePiece}
+                        color={this.state.color}
+                    />
+                }
             </>
         )
     }

@@ -12,9 +12,10 @@ interface PassedProps {
     oppoId: string;
     castleSwapStatus: CastleStatus;
     color: string;
+    setUpgrade: (val: boolean, move: any) => void
 }
 
-export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapStatus, color }) => {
+export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapStatus, color, setUpgrade }) => {
 
     const [dragActive, set_dragActive] = useState<string>("0")
     const { moves, set_moves } = useContext(MovesContext);
@@ -115,6 +116,12 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
         if (moves.length > 0) {
             let possible = moves.filter((move: any) => move.effects[0].pos === key),
                 move = possible[0];
+            console.log("this is move", move)
+            if (move && move.hasOwnProperty("upgrade") && move.upgrade) {
+                setUpgrade(true, move);
+                removeHighlights();
+                return;
+            }
             if (possible.length > 0) {
                 let copy = { ...board };
                 for (let i: number = 0; i < move.effects.length; i++) {
