@@ -5,13 +5,13 @@ import { knightMoves } from "./Moves/Knights";
 import { kingMoves } from "./Moves/Kings";
 //prettier-ignore
 
-export const getLegalMoves = (tag: string, boardKeys: Keys, board: Board, boardPos:number, castleStatus:CastleStatus) => {
+export const getLegalMoves = (tag: string, boardKeys: Keys, board: Board, boardPos:number, castleStatus:CastleStatus, enpassant:string) => {
     const playerPiece = tag.toLowerCase()
     if(playerPiece === "q" || playerPiece === "b" || playerPiece === "r"){
         return freePiecesMoves(tag, boardKeys, board, boardPos);
     }
     if(playerPiece === "p"){
-        return pawnsMoves(tag, boardKeys, board, boardPos);
+        return pawnsMoves(tag, boardKeys, board, boardPos, enpassant);
     }
     if(playerPiece === "n"){
         return knightMoves(tag, boardKeys, board, boardPos);

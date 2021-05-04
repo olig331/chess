@@ -24,6 +24,7 @@ const initBoard: { [key: string]: string } = {
 const FallenPiecesContext: any = React.createContext({});
 const TurnContext: any = React.createContext(null);
 const BoardContext: any = React.createContext(null);
+const EnpassantContext: any = React.createContext(null);
 
 export class GameInstance extends React.Component<passedProps> {
 
@@ -34,7 +35,8 @@ export class GameInstance extends React.Component<passedProps> {
         board: initBoard,
         castleSwapStatus: { "qside": true, "kside": true },
         fallenPieces: { "white": [], "black": [] },
-        yourTurn: true
+        yourTurn: true,
+        enpassant: ""
     }
 
     componentDidMount() {
@@ -44,8 +46,11 @@ export class GameInstance extends React.Component<passedProps> {
             this.setState({ oppoId: payload.oppoId, color: payload.color, yourTurn: turn });
             simulateStartSound();
         });
-        socket.on("recieveMove", (newBoard: any) => {
-            this.setBoard(JSON.parse(newBoard));
+        socket.on("recieveMove", (payload: any) => {
+            console.log("recieveMoveData", JSON.parse(payload))
+            let data = JSON.parse(payload)
+            this.setBoard(data.newBoard);
+            this.setEnpassant(data.enpassant)
             this.setTurn(true)
             this.handleRecieveMove()
         });
@@ -80,6 +85,10 @@ export class GameInstance extends React.Component<passedProps> {
         this.setState({ yourTurn: status })
     }
 
+    public setEnpassant = (square: string) => {
+        this.setState({ enpassant: square })
+    }
+
     public setBoard = (newBoard: Board) => {
         this.setState({ board: newBoard });
     }
@@ -91,16 +100,20 @@ export class GameInstance extends React.Component<passedProps> {
         const { setTurn } = this;
         const { setBoard } = this;
         const board = this.state.board
+        const enpassant = this.state.enpassant;
+        const { setEnpassant } = this;
         return (
             <>
                 <FallenPiecesContext.Provider value={{ fallenPieces, setFallenPieces }}>
                     <TurnContext.Provider value={{ yourTurn, setTurn }}>
                         <BoardContext.Provider value={{ board, setBoard }}>
-                            <ChessBoard
-                                oppoId={this.state.oppoId}
-                                castleSwapStatus={this.state.castleSwapStatus}
-                                color={this.state.color}
-                            />
+                            <EnpassantContext.Provider value={{ enpassant, setEnpassant }}>
+                                <ChessBoard
+                                    oppoId={this.state.oppoId}
+                                    castleSwapStatus={this.state.castleSwapStatus}
+                                    color={this.state.color}
+                                />
+                            </EnpassantContext.Provider>
                         </BoardContext.Provider>
                     </TurnContext.Provider>
                 </FallenPiecesContext.Provider>
@@ -112,4 +125,4 @@ export class GameInstance extends React.Component<passedProps> {
     }
 }
 
-export { FallenPiecesContext, TurnContext, BoardContext }
+export { FallenPiecesContext, TurnContext, BoardContext, EnpassantContext }

@@ -3,7 +3,7 @@ import { getImage } from '../../HelperFunctions/getImage';
 import { getLegalMoves } from '../GameInstance/GameFunctions/getLegalMoves';
 import { simulateMoveSound } from '../../HelperFunctions/triggerAudio'
 import { MovesContext } from './ChessBoard';
-import { BoardContext, FallenPiecesContext, TurnContext } from '../GameInstance/GameInstance';
+import { BoardContext, FallenPiecesContext, TurnContext, EnpassantContext } from '../GameInstance/GameInstance';
 const socket = require('../../SocketConnection/Socket').socket;
 
 interface PassedProps {
@@ -21,6 +21,7 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
     const { setFallenPieces } = useContext(FallenPiecesContext);
     const { yourTurn, setTurn } = useContext(TurnContext)
     const { board, setBoard } = useContext(BoardContext)
+    const { enpassant } = useContext(EnpassantContext);
 
     const darkSqaure = `radial-gradient(
         circle,
@@ -65,7 +66,11 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
 
     const removeHighlights = () => {
         document.querySelectorAll(".highlight").forEach((ele: any) => {
-            let newClass = ele.className.replace(/\shighlight/, "");
+            let newClass: string = ele.className.replace(/\shighlight/, "");
+            return ele.className = newClass
+        })
+        document.querySelectorAll(".checked").forEach((ele: any) => {
+            let newClass: string = ele.className.replace(/\schecked/, "");
             return ele.className = newClass
         })
     }
@@ -74,6 +79,7 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
         crt.style.background = "none"
         crt.style.position = "absolute"; crt.style.top = "0px"; crt.style.right = "0px";
         crt.style.width = "85px"; crt.style.height = "85px"; crt.style.transform = "rotate(0deg)";
+        crt.style.zIndex = "-1"
         document.body.appendChild(crt)
         e.dataTransfer.setDragImage(crt, 45, 50);
     }
@@ -93,7 +99,7 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
         if (yourTurn && getPieceColor(board[key]) === color) {
             set_dragActive("1"); // when the val is 1 the original piece will be hidden and the only the drag piece will be visiible
             createDragImage(e); // Create the draggable image
-            const moves: MoveArr[] = getLegalMoves(board[key], Object.keys(board), board, index, castleSwapStatus); // returns an array of all aquares we can move to
+            const moves: MoveArr[] = getLegalMoves(board[key], Object.keys(board), board, index, castleSwapStatus, enpassant); // returns an array of all aquares we can move to
             moves && moves.forEach((move: MoveArr) => {
                 document.getElementsByClassName(`node ${move.effects[0].pos}`)[0].className = `node ${move.effects[0].pos} highlight`
             }) // this function just highlights all the squares the selected piece can move to
@@ -114,15 +120,14 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
                 for (let i: number = 0; i < move.effects.length; i++) {
                     let curr = move.effects[i];
                     copy[curr.pos] = curr.piece;
-                    let ele: any = document.getElementsByClassName(`node ${curr.pos}`)[0]
-                    console.log("set-arrt", ele, curr.pos)
-                    ele.setAttribute('data-active', "0");
                 }
+                let enpassantData: string = move.hasOwnProperty("enpassant") ? move.enpassant : "";
+                setFallenPieces(move.taking)
                 setBoard(copy)
                 set_moves([])
                 removeHighlights()
                 simulateMoveSound()
-                socket.emit("sendMove", JSON.stringify({ oppoId: oppoId, data: copy }));
+                socket.emit("sendMove", JSON.stringify({ oppoId: oppoId, data: copy, enpassant: enpassantData }));
                 setTurn(false)
             } else {
                 removeHighlights()

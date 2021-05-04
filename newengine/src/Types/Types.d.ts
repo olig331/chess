@@ -6,6 +6,7 @@ type GameState = {
     castleSwapStatus: CastleStatus;
     fallenPieces: FallenPieces;
     yourTurn: boolean;
+    enpassant: string;
 };
 
 type Board = { [key: string]: string };
@@ -14,6 +15,7 @@ type CastleStatus = { [key: string]: boolean };
 type MoveArr = {
     effects: { pos: string; piece: string }[];
     taking: string;
+    enpassant?: string;
 };
 
 type Effects = { [key: string]: string };
