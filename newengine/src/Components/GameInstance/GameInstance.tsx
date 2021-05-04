@@ -23,6 +23,7 @@ const initBoard: { [key: string]: string } = {
 
 const FallenPiecesContext: any = React.createContext({});
 const TurnContext: any = React.createContext(null);
+const BoardContext: any = React.createContext(null);
 
 export class GameInstance extends React.Component<passedProps> {
 
@@ -44,7 +45,7 @@ export class GameInstance extends React.Component<passedProps> {
             simulateStartSound();
         });
         socket.on("recieveMove", (newBoard: any) => {
-            this.setState({ board: JSON.parse(newBoard) });
+            this.setBoard(JSON.parse(newBoard));
             this.setTurn(true)
             this.handleRecieveMove()
         });
@@ -52,7 +53,7 @@ export class GameInstance extends React.Component<passedProps> {
 
     public handleRecieveMove = () => {
         const amIChecked = checkForCheck(this.state.board, this.state.color);
-        console.log("in check")
+        console.log(amIChecked)
         if (amIChecked) {
             const kingTag = this.state.color === "white" ? "K" : "k"
             let pos = Object.keys(this.state.board).filter((key: string) => this.state.board[key] === kingTag);
@@ -79,28 +80,36 @@ export class GameInstance extends React.Component<passedProps> {
         this.setState({ yourTurn: status })
     }
 
+    public setBoard = (newBoard: Board) => {
+        this.setState({ board: newBoard });
+    }
+
     render() {
         const fallenPieces = this.state.fallenPieces;
         const { setFallenPieces } = this;
         const yourTurn = this.state.yourTurn;
         const { setTurn } = this;
+        const { setBoard } = this;
+        const board = this.state.board
         return (
             <>
                 <FallenPiecesContext.Provider value={{ fallenPieces, setFallenPieces }}>
                     <TurnContext.Provider value={{ yourTurn, setTurn }}>
-                        <ChessBoard
-                            board={this.state.board}
-                            oppoId={this.state.oppoId}
-                            castleSwapStatus={this.state.castleSwapStatus}
-                            color={this.state.color}
-                        />
+                        <BoardContext.Provider value={{ board, setBoard }}>
+                            <ChessBoard
+                                oppoId={this.state.oppoId}
+                                castleSwapStatus={this.state.castleSwapStatus}
+                                color={this.state.color}
+                            />
+                        </BoardContext.Provider>
                     </TurnContext.Provider>
                 </FallenPiecesContext.Provider>
                 <Audio />
                 <div>White:{this.state.fallenPieces.white} - Black:{this.state.fallenPieces.black}</div>
+                <button onClick={() => console.log(this.state.board)}>Board</button>
             </>
         )
     }
 }
 
-export { FallenPiecesContext, TurnContext }
+export { FallenPiecesContext, TurnContext, BoardContext }

@@ -36,7 +36,6 @@ export const filterByCheck = (tag:string, movesList: MoveArr[], board:Board): Mo
             let effect:Effects = curr.effects[j];
                 copy[effect.pos] = effect.piece
         }   
-        console.log(checkForCheck(copy, color), copy)
         if(!checkForCheck(copy, color)){
             finalResult.push(movesList[i])
         }

@@ -69,10 +69,8 @@ const canCastleSwap = (board:Board, boardKeys:Keys, castleStatus:CastleStatus, c
         {king:`f${rank}`, empty:`e${rank}`}, 
         {king:`g${rank}`, empty:`e${rank}`}
     ];
-    console.log("stwatus",castleStatus)
     if(!checkForCheck(board, color)){ // check if the king is in check    
-        if(castleStatus.qside){ // second we need to check if the king or the rooks have moved null and voiding castle swap (true means we can castle swap)
-            console.log(board[`d${rank}`], board[`c${rank}`])
+        if(castleStatus.qside){ // second we need to check if the king or the rooks have moved null and voiding castle swap (true means we can castle swap)        
             if(!board[`d${rank}`] && !board[`c${rank}`]){
                 let canQueenSide = true;
                 for(let i:number = 0; i < qSidePositions.length; i++){
@@ -81,7 +79,6 @@ const canCastleSwap = (board:Board, boardKeys:Keys, castleStatus:CastleStatus, c
 
                     copy[pos.king] = tag
                     copy[pos.empty] = ""
-                    console.log("q side checkfor check",checkForCheck(copy, color))
                     if(checkForCheck(copy, color)){
                         canQueenSide = false
                     }
@@ -126,6 +123,5 @@ const canCastleSwap = (board:Board, boardKeys:Keys, castleStatus:CastleStatus, c
             }
         }
     }
-    console.log("castle swap result", result)
     return result;
 };

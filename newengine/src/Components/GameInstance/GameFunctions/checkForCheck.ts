@@ -17,11 +17,9 @@ export const checkForCheck = (board: any, color: string) => {
 
         if (i < 8) {
             while (validPos(newSq)) {
-                console.log("newSq", newSq);
                 let pos = boardKeys[newSq];
                 let piece = board[pos],
                     lastKey = boardKeys[newSq - kingCheckVectors[i]];
-                console.log(pos, board[pos], piece, board);
                 //prettier-ignore
                 if (validPos(lastKey) && Math.abs(pos.charCodeAt(0) - lastKey.charCodeAt(0)) > 2) { 
                     break;

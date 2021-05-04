@@ -59,13 +59,15 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
                         taking:""
                     });
                 }
-                let doubleMove:number = tempSq + vectors[i];
+                let doubleMove:string = boardKeys[tempSq + vectors[i]];
+                console.log(doubleMove)
+                console.log("pawn double move",board[doubleMove])
                 if(!piece && !board[doubleMove]){   
                     if(color === "white" && Math.floor(boardPos / 8) === 6){ // check they are on their starting ranks (0 indexed)
                         legalMoves.push({
                             effects:[
-                                {pos:boardKeys[doubleMove], piece:tag},
-                                {pos:boardKeys[boardPos], piece:""}
+                                {pos:doubleMove, piece:tag},
+                                {pos:doubleMove, piece:""}
                             ],
                             taking:""
                         });
@@ -73,7 +75,7 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
                     if(color === "black" && Math.floor(boardPos / 8) === 1){ // check they are on their starting ranks (0 indexed)
                         legalMoves.push({
                             effects:[
-                                {pos:boardKeys[doubleMove], piece:tag},
+                                {pos:doubleMove, piece:tag},
                                 {pos:boardKeys[boardPos], piece:""}
                             ],
                             taking:""

@@ -1,9 +1,8 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
+import { BoardContext } from '../GameInstance/GameInstance';
 import { Square } from './Square';
-import { checkForCheck } from '../GameInstance/GameFunctions/checkForCheck';
 
 interface PassedProps {
-    board: { [key: string]: string };
     oppoId: string;
     castleSwapStatus: CastleStatus,
     color: string
@@ -11,16 +10,16 @@ interface PassedProps {
 
 const MovesContext: any = React.createContext([]);
 
-export const ChessBoard: React.FC<PassedProps> = ({ board, oppoId, castleSwapStatus, color }) => {
+export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, color }) => {
 
     const [moves, set_moves] = useState<MoveArr[]>([])
+    const { board } = useContext(BoardContext)
 
     return (
         <div className="board_wrapper" style={color === "black" ? { transform: "rotate(180deg)" } : { transform: "rotate(0deg)" }}>
             {Object.keys(board).map((key: string, index: number) => (
                 <MovesContext.Provider value={{ moves, set_moves }}>
                     <Square
-                        board={board}
                         pos={key}
                         index={index}
                         oppoId={oppoId}
@@ -29,7 +28,6 @@ export const ChessBoard: React.FC<PassedProps> = ({ board, oppoId, castleSwapSta
                     />
                 </MovesContext.Provider>
             ))}
-            <button onClick={() => checkForCheck(board, "white")}>Check for check</button>
         </div>
     )
 }

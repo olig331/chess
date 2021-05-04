@@ -3,11 +3,10 @@ import { getImage } from '../../HelperFunctions/getImage';
 import { getLegalMoves } from '../GameInstance/GameFunctions/getLegalMoves';
 import { simulateMoveSound } from '../../HelperFunctions/triggerAudio'
 import { MovesContext } from './ChessBoard';
-import { FallenPiecesContext, TurnContext } from '../GameInstance/GameInstance';
+import { BoardContext, FallenPiecesContext, TurnContext } from '../GameInstance/GameInstance';
 const socket = require('../../SocketConnection/Socket').socket;
 
 interface PassedProps {
-    board: any;
     pos: string;
     index: number;
     oppoId: string;
@@ -15,12 +14,13 @@ interface PassedProps {
     color: string;
 }
 
-export const Square: React.FC<PassedProps> = ({ board, pos, index, oppoId, castleSwapStatus, color }) => {
+export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapStatus, color }) => {
 
     const [dragActive, set_dragActive] = useState<string>("0")
     const { moves, set_moves } = useContext(MovesContext);
-    const { fallenPieces, setFallenPieces } = useContext(FallenPiecesContext);
+    const { setFallenPieces } = useContext(FallenPiecesContext);
     const { yourTurn, setTurn } = useContext(TurnContext)
+    const { board, setBoard } = useContext(BoardContext)
 
     const darkSqaure = `radial-gradient(
         circle,
@@ -100,24 +100,29 @@ export const Square: React.FC<PassedProps> = ({ board, pos, index, oppoId, castl
             set_moves(moves) // add the moves to state
         }
         // set the piece we are moving to state
+        set_dragActive("0")
         return;
     }
 
     const handleDrop = (e: any, key: any) => {
         set_dragActive("0")
         if (moves.length > 0) {
-            let possible = moves.filter((move: any) => move.effects[0].pos === key)
+            let possible = moves.filter((move: any) => move.effects[0].pos === key),
+                move = possible[0];
             if (possible.length > 0) {
-                possible.map((move: MoveArr) => {
-                    setFallenPieces(move.taking)
-                    move.effects.map((effect: Effects) => {
-                        return board[effect.pos] = effect.piece;
-                    })
-                })
+                let copy = { ...board };
+                for (let i: number = 0; i < move.effects.length; i++) {
+                    let curr = move.effects[i];
+                    copy[curr.pos] = curr.piece;
+                    let ele: any = document.getElementsByClassName(`node ${curr.pos}`)[0]
+                    console.log("set-arrt", ele, curr.pos)
+                    ele.setAttribute('data-active', "0");
+                }
+                setBoard(copy)
                 set_moves([])
                 removeHighlights()
                 simulateMoveSound()
-                socket.emit("sendMove", JSON.stringify({ oppoId: oppoId, data: board }));
+                socket.emit("sendMove", JSON.stringify({ oppoId: oppoId, data: copy }));
                 setTurn(false)
             } else {
                 removeHighlights()
@@ -127,6 +132,7 @@ export const Square: React.FC<PassedProps> = ({ board, pos, index, oppoId, castl
             return;
         }
         removeHighlights()
+
         return;
     };
     return (
