@@ -51,10 +51,10 @@ export const freePiecesMoves = (tag: string,boardKeys: Keys,board: Board,boardPo
                     { pos: boardKeys[tempSq], piece: tag },
                     { pos: boardKeys[boardPos], piece: "" },
                 ],
-                taking: "piece",
+                taking: "",
             });
             tempSq += vectors[i];
         }
     }
-    return filterByCheck(tag, legalMoves, board, boardPos);
+    return filterByCheck(tag, legalMoves, board);
 };

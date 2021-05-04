@@ -52,7 +52,7 @@ export class GameInstance extends React.Component<passedProps> {
 
     public handleRecieveMove = () => {
         const amIChecked = checkForCheck(this.state.board, this.state.color);
-
+        console.log("in check")
         if (amIChecked) {
             const kingTag = this.state.color === "white" ? "K" : "k"
             let pos = Object.keys(this.state.board).filter((key: string) => this.state.board[key] === kingTag);
@@ -97,7 +97,7 @@ export class GameInstance extends React.Component<passedProps> {
                     </TurnContext.Provider>
                 </FallenPiecesContext.Provider>
                 <Audio />
-                <button onClick={() => console.log(this.state.fallenPieces)}>Log Fallen Pieces</button>
+                <div>White:{this.state.fallenPieces.white} - Black:{this.state.fallenPieces.black}</div>
             </>
         )
     }

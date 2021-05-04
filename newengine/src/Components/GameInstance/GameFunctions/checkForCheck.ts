@@ -6,7 +6,7 @@ const kingCheckVectors = [1, -1, -8, 8, 7, 9, -9, -7, -17, -15, -10, -6, 17, 15,
 export const checkForCheck = (board: any, color: string) => {
     let boardKeys: any = Object.keys(board);
     // prettier-ignore
-    let kingTag = color === "white" ? "K" : "k"
+    let kingTag = color === "white" ? "K" : "k";
     //prettier-ignore
     let king: any = Object.keys(board).filter((key: string) => board[key] === kingTag);
     let index: any = boardKeys.indexOf(`${king}`);
@@ -14,16 +14,19 @@ export const checkForCheck = (board: any, color: string) => {
     let result: boolean = false;
     for (i = 0; i < kingCheckVectors.length; i++) {
         let newSq = index + kingCheckVectors[i];
-        while (validPos(newSq)) {
-            let pos = boardKeys[newSq];
-            let piece = board[pos],
-                key = boardKeys[newSq],
-                lastKey = boardKeys[newSq - kingCheckVectors[i]];
-            //prettier-ignore
-            if (validPos(lastKey) && Math.abs(key.charCodeAt(0) - lastKey.charCodeAt(0)) > 2) { 
-                break;
-            }
-            if (i < 8) {
+
+        if (i < 8) {
+            while (validPos(newSq)) {
+                console.log("newSq", newSq);
+                let pos = boardKeys[newSq];
+                let piece = board[pos],
+                    lastKey = boardKeys[newSq - kingCheckVectors[i]];
+                console.log(pos, board[pos], piece, board);
+                //prettier-ignore
+                if (validPos(lastKey) && Math.abs(pos.charCodeAt(0) - lastKey.charCodeAt(0)) > 2) { 
+                    break;
+                }
+
                 // prettier-ignore
 
                 if (i < 4) {
@@ -44,6 +47,7 @@ export const checkForCheck = (board: any, color: string) => {
                             break;
                         }
                     }
+
                 }
                 if (i > 3) {
                     if (piece) {
@@ -65,13 +69,18 @@ export const checkForCheck = (board: any, color: string) => {
                         }
                     }
                 }
+                newSq += kingCheckVectors[i];
             }
-            newSq += kingCheckVectors[i];
         }
 
         if (i > 7 && validPos(newSq)) {
             let pos = boardKeys[newSq];
-            let piece = board[pos];
+            let piece = board[pos],
+                lastKey = boardKeys[newSq - kingCheckVectors[i]];
+            //prettier-ignore
+            if (validPos(lastKey) && Math.abs(pos.charCodeAt(0) - lastKey.charCodeAt(0)) > 2) { 
+                continue;
+            }
             if (color === "white" && piece === "n") {
                 // in check
                 result = true;

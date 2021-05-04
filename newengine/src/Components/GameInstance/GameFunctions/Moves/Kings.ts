@@ -54,7 +54,7 @@ export const kingMoves = (tag: string, boardKeys: Keys, board: Board, boardPos: 
 
     canCastleSwap(board, boardKeys, castleStatus, color, tag) // gets the results from castle swaping and then adds them to legal moves array
         .map((move:MoveArr) => legalMoves.push(move));
-    return filterByCheck(tag, legalMoves, board,boardPos); 
+    return filterByCheck(tag, legalMoves, board); 
 }
 
 //prettier-ignore

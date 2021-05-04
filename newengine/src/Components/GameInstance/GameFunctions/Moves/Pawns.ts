@@ -83,5 +83,5 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
             }
         }
     }
-    return filterByCheck(tag, legalMoves, board, boardPos);
+    return filterByCheck(tag, legalMoves, board);
 };

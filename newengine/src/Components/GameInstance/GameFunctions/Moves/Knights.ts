@@ -58,5 +58,5 @@ export const knightMoves = (tag: string, boardKeys: Keys, board: Board, boardPos
         }
     };
     console.log("knight moves",legalMoves)
-    return filterByCheck(tag, legalMoves, board, boardPos);
+    return filterByCheck(tag, legalMoves, board);
 }

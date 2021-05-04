@@ -138,7 +138,7 @@ export const Square: React.FC<PassedProps> = ({ board, pos, index, oppoId, castl
             onDragStart={(e) => handleMove(e, pos, index)}
             onDragEnd={() => set_dragActive("0")}
             key={index}
-            style={{ background: getSqaureColor(index + 1) }}
+            style={color === "black" ? { transform: "rotate(180deg)", background: getSqaureColor(index + 1) } : { transform: "rotate(0deg)", background: getSqaureColor(index + 1) }}
             className={`node ${pos}`}>
             <span data-active={dragActive} className="img_parent">{getImage(board[pos])}</span>
             {pos}

@@ -16,7 +16,7 @@ export const ChessBoard: React.FC<PassedProps> = ({ board, oppoId, castleSwapSta
     const [moves, set_moves] = useState<MoveArr[]>([])
 
     return (
-        <div className="board_wrapper">
+        <div className="board_wrapper" style={color === "black" ? { transform: "rotate(180deg)" } : { transform: "rotate(0deg)" }}>
             {Object.keys(board).map((key: string, index: number) => (
                 <MovesContext.Provider value={{ moves, set_moves }}>
                     <Square
