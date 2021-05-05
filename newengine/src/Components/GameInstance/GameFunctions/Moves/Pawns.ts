@@ -30,7 +30,7 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
                                     {pos:boardKeys[tempSq], piece:tag},
                                     {pos:boardKeys[boardPos], piece:""}
                                 ],
-                                taking:piece,
+                                taking:{piece:piece, pos:boardKeys[tempSq]},
                                 upgrade: parseInt(boardKeys[tempSq].split("")[1]) === endRank ? true : false
                             });
                         }
@@ -43,7 +43,7 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
                                     {pos:boardKeys[tempSq], piece:tag},
                                     {pos:boardKeys[boardPos], piece:""}
                                 ],
-                                taking:piece,
+                                taking:{piece:piece, pos:boardKeys[tempSq]},
                                 upgrade: parseInt(boardKeys[tempSq].split("")[1]) === endRank ? true : false
                             });
                         }
@@ -59,7 +59,7 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
                             {pos:boardKeys[tempSq], piece:tag},
                             {pos:boardKeys[boardPos], piece:""}
                         ],
-                        taking:"",
+                        taking:{piece:"", pos:""},
                         upgrade: parseInt(boardKeys[tempSq].split("")[1]) === endRank ? true : false
                     });
                 }
@@ -71,7 +71,7 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
                                 {pos:doubleMove, piece:tag},
                                 {pos:boardKeys[boardPos], piece:""}
                             ],
-                            taking:"",
+                            taking:{piece:"", pos:""},
                             enpassant:doubleMove
                         });
                     }
@@ -81,7 +81,7 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
                                 {pos:doubleMove, piece:tag},
                                 {pos:boardKeys[boardPos], piece:""}
                             ],
-                            taking:"",
+                            taking:{piece:"", pos:""},
                             enpassant:doubleMove
                         });
                     }
@@ -96,7 +96,7 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
                     {pos:boardKeys[boardPos - 1], piece: ""},
                     {pos:boardKeys[boardPos], piece:""}
                 ],
-                taking: color ==="white" ? "p" : "P"
+                taking: {piece:color ==="white" ? "p" : "P", pos:boardKeys[boardPos - 1]}
             });
         }
         if(boardKeys[boardPos + 1] === enpassant){
@@ -106,7 +106,7 @@ export const pawnsMoves = (tag:string, boardKeys:Keys, board:Board, boardPos:num
                     {pos:boardKeys[boardPos + 1], piece: ""},
                     {pos:boardKeys[boardPos], piece:""}
                 ],
-                taking: color ==="white" ? "p" : "P"
+                taking:{piece:color ==="white" ? "p" : "P", pos:boardKeys[boardPos + 1]}
             });
         }
     }

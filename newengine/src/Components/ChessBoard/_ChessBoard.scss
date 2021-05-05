@@ -15,6 +15,13 @@
         align-items: center;
         flex-direction: column;
         position: relative;
+        p {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 12px;
+            color: rgb(39, 39, 39);
+        }
         &::selection {
             color: none;
             background: none;

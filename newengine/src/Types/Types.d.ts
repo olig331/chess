@@ -10,14 +10,17 @@ type GameState = {
     upgrade: boolean;
     upgradeData: any;
     yourPieces: string[];
+    gameOver: boolean;
+    gameOverMessage: string;
 };
 
+type Taking = { [key: string]: string };
 type Board = { [key: string]: string };
 type Keys = string[];
 type CastleStatus = { [key: string]: boolean };
 type MoveArr = {
     effects: { pos: string; piece: string }[];
-    taking: string;
+    taking: Taking;
     enpassant?: string;
     upgrade?: boolean;
 };
@@ -25,6 +28,7 @@ type MoveArr = {
 type MovePayload = {
     newBoard: Board;
     enpassant: string;
+    taking: Taking;
 };
 
 type SetUpData = { [key: string]: string };

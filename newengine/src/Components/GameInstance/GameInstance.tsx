@@ -6,6 +6,7 @@ import { checkForCheck } from './GameFunctions/checkForCheck';
 import { PawnUpgrade } from './PawnUpgrade';
 import { getLegalMoves } from './GameFunctions/getLegalMoves';
 import { initBoard } from './initialBoard'
+import { GameOver } from '../GameOver/GameOver';
 
 const socket = require('../../SocketConnection/Socket').socket;
 
@@ -19,7 +20,7 @@ const TurnContext: any = React.createContext(null);
 const BoardContext: any = React.createContext(null);
 const EnpassantContext: any = React.createContext(null);
 
-export class GameInstance extends React.Component<passedProps> {
+export class GameInstance extends React.PureComponent<passedProps> {
 
     state: GameState = {
         lobbyId: this.props.match.params.lobbyId,
@@ -32,7 +33,9 @@ export class GameInstance extends React.Component<passedProps> {
         enpassant: "",
         upgrade: false,
         upgradeData: "",
-        yourPieces: []
+        yourPieces: [],
+        gameOver: false,
+        gameOverMessage: "",
     }
 
     componentDidMount() {
@@ -45,21 +48,42 @@ export class GameInstance extends React.Component<passedProps> {
         });
         socket.on("recieveMove", (payload: string): void => {
             const data: MovePayload = JSON.parse(payload);
+            this.updatePiecesOnReciveMove(data.taking)
             this.setBoard(data.newBoard);
             this.setEnpassant(data.enpassant)
             this.setTurn(true)
             this.handleRecieveMove()
         });
         socket.on("stalemate", (): void => {
-            // handle stalemate
+            this.setState({ gameOver: true, gameOverMessage: "Match Drawn!!" });
         })
         socket.on("wonGame", (): void => {
-            // handle game win
+            this.setState({ gameOver: true, gameOverMessage: "Match Won" });
         });
     };
 
-    public updatePieces = () => {
+    public updatePiecesOnReciveMove = (taking: Taking): void => {
+        if (taking.piece) {
+            let copy = [...this.state.yourPieces];
+            const index: number = copy.indexOf(taking.pos);
+            copy.splice(index, 1);
+            this.setState({ yourPieces: copy })
+            this.setFallenPieces(taking)
+        }
+        return;
+    }
 
+    public updatePieces = (move: MoveArr): void => {
+        let piecesCopy: string[] = [...this.state.yourPieces]
+        move.effects.forEach((effect: Effects) => {
+            if (effect.piece) {
+                piecesCopy.push(effect.pos);
+            } else {
+                const index: number = piecesCopy.indexOf(effect.pos);
+                piecesCopy.splice(index, 1)
+            }
+        });
+        this.setState({ yourPieces: piecesCopy })
     }
 
     public getStartingPieces = (color: string): string[] => {
@@ -79,11 +103,13 @@ export class GameInstance extends React.Component<passedProps> {
             document.getElementsByClassName(`node ${pos[0]}`)[0].className = `node ${pos[0]} checked`
             if (isMate) {
                 socket.emit("lostGame", this.state.oppoId)
+                this.setState({ gameOver: true, gameOverMessage: "Match Lost!!" })
             }
         } else {
             // check for stalemate
             if (isMate) {
-                socket.emit("drawnGame", this.state.oppoId)
+                socket.emit("drawnGame", this.state.oppoId);
+                this.setState({ gameOver: true, gameOverMessage: "Match Drawn!!" })
             }
             return;
         }
@@ -102,12 +128,14 @@ export class GameInstance extends React.Component<passedProps> {
         return true;
     }
 
-    public setFallenPieces = (piece: string): void => {
+    public setFallenPieces = (taking: Taking): void => {
         let fallenPiecesCopy: FallenPieces = { ...this.state.fallenPieces };
-        if (piece.charCodeAt(0) < 91) {
-            fallenPiecesCopy.white.push(piece);
+        if (taking.piece && taking.piece.charCodeAt(0) < 91) {
+            fallenPiecesCopy.white.push(taking.piece);
         } else {
-            fallenPiecesCopy.black.push(piece);
+            if (taking.piece) {
+                fallenPiecesCopy.black.push(taking.piece);
+            }
         }
         this.setState({ fallenPieces: fallenPiecesCopy });
         return;
@@ -142,7 +170,8 @@ export class GameInstance extends React.Component<passedProps> {
     }
 
     public setUpgrade = (val: boolean, move: MoveArr): void => {
-        this.setState({ upgrade: val, upgradeData: move })
+        this.updatePieces(move);
+        this.setState({ upgrade: val, upgradeData: move });
     }
 
     render() {
@@ -155,7 +184,11 @@ export class GameInstance extends React.Component<passedProps> {
         const enpassant = this.state.enpassant;
         const { setEnpassant } = this;
         return (
-            <>
+            <div style={this.state.gameOver ? { pointerEvents: "none" } : { pointerEvents: "all" }}>
+                <GameOver
+                    gameOver={this.state.gameOver}
+                    gameOverMessage={this.state.gameOverMessage}
+                />
                 <FallenPiecesContext.Provider value={{ fallenPieces, setFallenPieces }}>
                     <TurnContext.Provider value={{ yourTurn, setTurn }}>
                         <BoardContext.Provider value={{ board, setBoard }}>
@@ -178,7 +211,7 @@ export class GameInstance extends React.Component<passedProps> {
                     color={this.state.color}
                     showUpgrade={this.state.upgrade}
                 />
-            </>
+            </div>
         )
     }
 }

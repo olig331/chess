@@ -28,7 +28,7 @@ export const kingMoves = (tag: string, boardKeys: Keys, board: Board, boardPos: 
                             {pos:boardKeys[tempSq], piece:tag},
                             {pos:boardKeys[boardPos], piece:""}
                         ],
-                        taking:piece
+                        taking:{piece:piece, pos:boardKeys[tempSq]}
                     });
                 } 
                 if(color === "black" && piece.charCodeAt(0) < 91){
@@ -37,7 +37,7 @@ export const kingMoves = (tag: string, boardKeys: Keys, board: Board, boardPos: 
                             {pos:boardKeys[tempSq], piece:tag},
                             {pos:boardKeys[boardPos], piece:""}
                         ],
-                        taking:piece
+                        taking:{piece:piece, pos:boardKeys[tempSq]}
                     });
                 } 
                 continue;
@@ -47,7 +47,7 @@ export const kingMoves = (tag: string, boardKeys: Keys, board: Board, boardPos: 
                     {pos:boardKeys[tempSq], piece:tag},
                     {pos:boardKeys[boardPos], piece:""}
                 ],
-                taking:""
+                taking:{piece:"", pos:""}
             });
         }
     }
@@ -91,7 +91,7 @@ const canCastleSwap = (board:Board, boardKeys:Keys, castleStatus:CastleStatus, c
                             { pos: `e${rank}`, piece:""},
                             { pos: `a${rank}`, piece:""},
                         ],
-                        taking: "",
+                        taking: {piece:"", pos:""},
                     })
                 }
             }
@@ -117,7 +117,7 @@ const canCastleSwap = (board:Board, boardKeys:Keys, castleStatus:CastleStatus, c
                             { pos: `e${rank}`, piece:""},
                             { pos: `h${rank}`, piece:""},
                         ],
-                        taking: "",
+                        taking: {piece:"", pos:""},
                     })
                 }
             }

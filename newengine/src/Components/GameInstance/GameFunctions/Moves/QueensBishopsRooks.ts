@@ -29,7 +29,7 @@ export const freePiecesMoves = (tag: string,boardKeys: Keys,board: Board,boardPo
                             { pos: boardKeys[tempSq], piece: tag },
                             { pos: boardKeys[boardPos], piece: "" },
                         ],
-                        taking: piece,
+                        taking: {piece:piece, pos:boardKeys[tempSq]},
                     });
                 }
                 break;
@@ -41,7 +41,7 @@ export const freePiecesMoves = (tag: string,boardKeys: Keys,board: Board,boardPo
                             { pos: boardKeys[tempSq], piece: tag },
                             { pos: boardKeys[boardPos], piece: "" },
                         ],
-                        taking: piece,
+                        taking: {piece:piece, pos:boardKeys[tempSq]},
                     });
                 }
                 break;
@@ -51,7 +51,7 @@ export const freePiecesMoves = (tag: string,boardKeys: Keys,board: Board,boardPo
                     { pos: boardKeys[tempSq], piece: tag },
                     { pos: boardKeys[boardPos], piece: "" },
                 ],
-                taking: "",
+                taking: {piece:"", pos:""},
             });
             tempSq += vectors[i];
         }

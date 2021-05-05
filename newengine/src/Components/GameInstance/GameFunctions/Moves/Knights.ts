@@ -30,7 +30,7 @@ export const knightMoves = (tag: string, boardKeys: Keys, board: Board, boardPos
                                 {pos:boardKeys[tempSq], piece:tag},
                                 {pos:boardKeys[boardPos], piece:""}
                             ],
-                            taking:piece
+                            taking:{piece:piece, pos:boardKeys[tempSq]}
                         });
                     }
                     continue;
@@ -42,7 +42,7 @@ export const knightMoves = (tag: string, boardKeys: Keys, board: Board, boardPos
                                 {pos:boardKeys[tempSq], piece:tag},
                                 {pos:boardKeys[boardPos], piece:""}
                             ],
-                            taking:piece
+                            taking:{piece:piece, pos:boardKeys[tempSq]}
                         });
                     }
                     continue;
@@ -53,7 +53,7 @@ export const knightMoves = (tag: string, boardKeys: Keys, board: Board, boardPos
                     {pos:boardKeys[tempSq], piece:tag},
                     {pos:boardKeys[boardPos], piece:""}
                 ],
-                taking:""
+                taking:{piece:"", pos:""}
             })
         }
     };

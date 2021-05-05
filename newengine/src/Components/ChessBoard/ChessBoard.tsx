@@ -7,7 +7,7 @@ interface PassedProps {
     castleSwapStatus: CastleStatus,
     color: string;
     setUpgrade: (val: boolean, move: MoveArr) => void
-    updatePieces: () => void;
+    updatePieces: (move: MoveArr) => void;
 };
 
 const MovesContext: any = React.createContext([]);

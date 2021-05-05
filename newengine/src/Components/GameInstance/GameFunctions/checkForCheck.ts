@@ -16,6 +16,20 @@ export const checkForCheck = (board: any, color: string) => {
         let newSq = index + kingCheckVectors[i];
 
         if (i < 8) {
+            let pos = boardKeys[newSq];
+            let piece = board[pos];
+            if (color === "black" && i > 3 && i < 6) {
+                if (piece === "P") {
+                    result = true;
+                    continue;
+                }
+            }
+            if (color === "white" && i > 5 && i < 8) {
+                if (piece === "p") {
+                    result = true;
+                    continue;
+                }
+            }
             while (validPos(newSq)) {
                 let pos = boardKeys[newSq];
                 let piece = board[pos],
@@ -24,8 +38,6 @@ export const checkForCheck = (board: any, color: string) => {
                 if (validPos(lastKey) && Math.abs(pos.charCodeAt(0) - lastKey.charCodeAt(0)) > 2) { 
                     break;
                 }
-
-                // prettier-ignore
 
                 if (i < 4) {
                     // laterals
@@ -45,7 +57,6 @@ export const checkForCheck = (board: any, color: string) => {
                             break;
                         }
                     }
-
                 }
                 if (i > 3) {
                     if (piece) {

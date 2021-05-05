@@ -16,7 +16,7 @@ interface PassedProps {
     castleSwapStatus: CastleStatus;
     color: string;
     setUpgrade: (val: boolean, move: MoveArr) => void
-    updatePieces: () => void
+    updatePieces: (move: MoveArr) => void
 }
 
 export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapStatus, color, setUpgrade, updatePieces }) => {
@@ -73,12 +73,13 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
                     copy[curr.pos] = curr.piece;
                 }
                 let enpassantData: any = move.hasOwnProperty("enpassant") ? move.enpassant : "";
+                updatePieces(move);
                 setFallenPieces(move.taking)
                 setBoard(copy)
                 set_moves([])
                 removeHighlights()
                 simulateMoveSound()
-                socket.emit("sendMove", JSON.stringify({ oppoId: oppoId, data: copy, enpassant: enpassantData }));
+                socket.emit("sendMove", JSON.stringify({ oppoId: oppoId, data: copy, enpassant: enpassantData, taking: move.taking }));
                 setTurn(false)
             }
         }
@@ -94,11 +95,12 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
             onDragLeave={(e: SquareEvent) => handleDragLeave(e)}
             onDragStart={(e: SquareEvent) => handleMove(e, pos, index)}
             onDragEnd={() => set_dragActive("0")}
+            onClick={() => console.log(index)}
             key={index}
             style={color === "black" ? { transform: "rotate(180deg)", background: getSqaureColor(index + 1) } : { transform: "rotate(0deg)", background: getSqaureColor(index + 1) }}
             className={`node ${pos}`}>
             <span data-active={dragActive} className="img_parent">{getImage(board[pos])}</span>
-            {pos}
+            <p>{pos[0].toUpperCase()}{pos[1]}</p>
         </div>
     )
 }
