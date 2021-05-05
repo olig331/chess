@@ -49,11 +49,14 @@ io.on("connection", socket => {
     socket.on("lostTheMatch", id => {
         io.to(id).emit("youWon")
     })
-
-
     socket.on("drawnGame", id => {
         io.to(id).emit("stalemate")
+    });
+
+    socket.on("sendingChatMessage", payload => {
+        io.to(payload.id).emit("recieveChatMessage", payload.message)
     })
+
 })
 
 

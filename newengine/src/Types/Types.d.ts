@@ -1,5 +1,4 @@
 type GameState = {
-    lobbyId: string;
     oppoId: string;
     color: string;
     board: Board;
@@ -37,4 +36,4 @@ type Effects = { [key: string]: string };
 type FallenPieces = { [key: string]: string[] };
 
 type SquareEvent = React.FormEvent<HTMLDivElement>;
-type ChatEvent = React.FormEvent<HTMLTextAreaElement>
+type ChatEvent = React.FormEvent<HTMLTextAreaElement>;

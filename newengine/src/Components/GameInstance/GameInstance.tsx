@@ -7,24 +7,20 @@ import { PawnUpgrade } from './PawnUpgrade';
 import { getLegalMoves } from './GameFunctions/getLegalMoves';
 import { initBoard } from './initialBoard'
 import { GameOver } from '../GameOver/GameOver';
-import { Chat } from '../Chat/Chat';
+import { GameInfo } from '../GameInfo/GameInfo';
 
 const socket = require('../../SocketConnection/Socket').socket;
 
-interface passedProps {
-    history: any;
-    match: any
-}
+
 
 const FallenPiecesContext: any = React.createContext({});
 const TurnContext: any = React.createContext(null);
 const BoardContext: any = React.createContext(null);
 const EnpassantContext: any = React.createContext(null);
 
-export class GameInstance extends React.PureComponent<passedProps> {
+export class GameInstance extends React.Component {
 
     state: GameState = {
-        lobbyId: this.props.match.params.lobbyId,
         oppoId: "",
         color: "",
         board: initBoard,
@@ -40,11 +36,15 @@ export class GameInstance extends React.PureComponent<passedProps> {
     }
 
     componentDidMount() {
-        socket.emit("joinedLobby", this.state.lobbyId);
         socket.on("getMatchSetUpData", (payload: SetUpData): void => {
             const turn: boolean = payload.color === "white";
             const pieces: string[] = this.getStartingPieces(payload.color)
-            this.setState({ oppoId: payload.oppoId, color: payload.color, yourTurn: turn, yourPieces: pieces });
+            this.setState({
+                oppoId: payload.oppoId,
+                color: payload.color,
+                yourTurn: turn,
+                yourPieces: pieces
+            });
             simulateStartSound();
         });
         socket.on("recieveMove", (payload: string): void => {
@@ -220,8 +220,10 @@ export class GameInstance extends React.PureComponent<passedProps> {
                     color={this.state.color}
                     showUpgrade={this.state.upgrade}
                 />
-                <Chat
+                <GameInfo
                     oppoId={this.state.oppoId}
+                    color={this.state.color}
+                    fallenPieces={this.state.fallenPieces}
                 />
             </div>
         )
