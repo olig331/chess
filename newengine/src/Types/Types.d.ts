@@ -37,3 +37,4 @@ type Effects = { [key: string]: string };
 type FallenPieces = { [key: string]: string[] };
 
 type SquareEvent = React.FormEvent<HTMLDivElement>;
+type ChatEvent = React.FormEvent<HTMLTextAreaElement>

@@ -7,6 +7,7 @@ import { PawnUpgrade } from './PawnUpgrade';
 import { getLegalMoves } from './GameFunctions/getLegalMoves';
 import { initBoard } from './initialBoard'
 import { GameOver } from '../GameOver/GameOver';
+import { Chat } from '../Chat/Chat';
 
 const socket = require('../../SocketConnection/Socket').socket;
 
@@ -218,6 +219,9 @@ export class GameInstance extends React.PureComponent<passedProps> {
                     selectUpgradePiece={this.selectUpgradePiece}
                     color={this.state.color}
                     showUpgrade={this.state.upgrade}
+                />
+                <Chat
+                    oppoId={this.state.oppoId}
                 />
             </div>
         )
