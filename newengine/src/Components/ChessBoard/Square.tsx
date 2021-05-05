@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { getImage } from '../../HelperFunctions/getImage';
 import { getLegalMoves } from '../GameInstance/GameFunctions/getLegalMoves';
-import { simulateMoveSound } from '../../HelperFunctions/triggerAudio'
+import { simulateCastleSound, simulateMoveSound, simulateTakeSound } from '../../HelperFunctions/triggerAudio'
 import { getPieceColor, getSqaureColor } from '../GameInstance/GameFunctions/getPiecesColor';
 import { createDragImage } from '../GameInstance/GameFunctions/createDragImage';
 import { removeHighlights } from '../GameInstance/GameFunctions/highlightFunctions';
@@ -78,7 +78,13 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
                 setBoard(copy)
                 set_moves([])
                 removeHighlights()
-                simulateMoveSound()
+                if (move.taking.piece) {
+                    simulateTakeSound()
+                } else if (move.effects.length === 4) {
+                    simulateCastleSound()
+                } else {
+                    simulateMoveSound()
+                }
                 socket.emit("sendMove", JSON.stringify({ oppoId: oppoId, data: copy, enpassant: enpassantData, taking: move.taking }));
                 setTurn(false)
             }
@@ -95,7 +101,6 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
             onDragLeave={(e: SquareEvent) => handleDragLeave(e)}
             onDragStart={(e: SquareEvent) => handleMove(e, pos, index)}
             onDragEnd={() => set_dragActive("0")}
-            onClick={() => console.log(index)}
             key={index}
             style={color === "black" ? { transform: "rotate(180deg)", background: getSqaureColor(index + 1) } : { transform: "rotate(0deg)", background: getSqaureColor(index + 1) }}
             className={`node ${pos}`}>

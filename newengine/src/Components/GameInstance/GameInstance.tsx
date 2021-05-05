@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChessBoard } from '../ChessBoard/ChessBoard';
 import { Audio } from '../Audio/Audio'
-import { simulateStartSound, simulateMoveSound } from '../../HelperFunctions/triggerAudio';
+import { simulateStartSound, simulateMoveSound, simulateGameOverSound, simulateTakeSound } from '../../HelperFunctions/triggerAudio';
 import { checkForCheck } from './GameFunctions/checkForCheck';
 import { PawnUpgrade } from './PawnUpgrade';
 import { getLegalMoves } from './GameFunctions/getLegalMoves';
@@ -53,13 +53,20 @@ export class GameInstance extends React.PureComponent<passedProps> {
             this.setEnpassant(data.enpassant)
             this.setTurn(true)
             this.handleRecieveMove()
+            if (data.taking.piece) {
+                simulateTakeSound()
+            }
+            simulateMoveSound();
         });
         socket.on("stalemate", (): void => {
             this.setState({ gameOver: true, gameOverMessage: "Match Drawn!!" });
+            simulateGameOverSound()
         })
         socket.on("wonGame", (): void => {
             this.setState({ gameOver: true, gameOverMessage: "Match Won" });
+            simulateGameOverSound()
         });
+
     };
 
     public updatePiecesOnReciveMove = (taking: Taking): void => {
@@ -104,6 +111,7 @@ export class GameInstance extends React.PureComponent<passedProps> {
             if (isMate) {
                 socket.emit("lostGame", this.state.oppoId)
                 this.setState({ gameOver: true, gameOverMessage: "Match Lost!!" })
+                simulateGameOverSound()
             }
         } else {
             // check for stalemate

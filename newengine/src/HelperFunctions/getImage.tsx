@@ -3,13 +3,13 @@ import bn from "../Assets/pieces/bn.png";
 import bb from "../Assets/pieces/bb.png";
 import bq from "../Assets/pieces/bq.png";
 import bk from "../Assets/pieces/bk.png";
-import bp from "../Assets/pieces/bp.png";
+import bp from "../Assets/pieces/bpnew.png";
 import wr from "../Assets/pieces/wr.png";
 import wn from "../Assets/pieces/wn.png";
 import wb from "../Assets/pieces/wb.png";
 import wq from "../Assets/pieces/wq.png";
 import wk from "../Assets/pieces/wk.png";
-import wp from "../Assets/pieces/wp.png";
+import wp from "../Assets/pieces/wpnew.png";
 
 export const getImage = (tag: any): any => {
     switch (tag) {
