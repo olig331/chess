@@ -1,34 +1,39 @@
-type coords = {
-    y: number;
-    x: number;
-};
-
-type vectorsArr = coords[];
-
 type GameState = {
-    lobbyId: string;
+    oppoId: string;
+    color: string;
     board: Board;
-    selected: any;
-    player: Player;
-    game: Game;
+    castleSwapStatus: CastleStatus;
+    fallenPieces: FallenPieces;
+    yourTurn: boolean;
+    enpassant: string;
+    upgrade: boolean;
+    upgradeData: any;
+    yourPieces: string[];
+    gameOver: boolean;
+    gameOverMessage: string;
 };
 
-type Pieces = King | Queen | Rook | Bishop | Pawn | Knight;
-
-type BoardNode = Node;
-
-type KingsPos = { coords: coords; color: string };
-
-type castleSwapResult = { qside: boolean; kside: boolean };
-
-type legalMovesResult = {
-    move: coords;
-    effects: effectInstance[];
-    taking: string;
+type Taking = { [key: string]: string };
+type Board = { [key: string]: string };
+type Keys = string[];
+type CastleStatus = { [key: string]: boolean };
+type MoveArr = {
+    effects: { pos: string; piece: string }[];
+    taking: Taking;
+    enpassant?: string;
+    upgrade?: boolean;
 };
 
-type effectInstance = {
-    coords: coords;
-    new: Piece | null;
-    newProps: any;
+type MovePayload = {
+    newBoard: Board;
+    enpassant: string;
+    taking: Taking;
 };
+
+type SetUpData = { [key: string]: string };
+
+type Effects = { [key: string]: string };
+type FallenPieces = { [key: string]: string[] };
+
+type SquareEvent = React.FormEvent<HTMLDivElement>;
+type ChatEvent = React.FormEvent<HTMLTextAreaElement>;

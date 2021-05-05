@@ -1,10 +1,16 @@
 export const simulateMoveSound = (): void => {
-    document.getElementById("move_sound")?.click();
+    document.getElementById("moveSound")?.click();
 };
 export const simulateStartSound = (): void => {
-    document.getElementById("start_game_sound")?.click();
+    document.getElementById("startSound")?.click();
 };
 
 export const simulateGameOverSound = (): void => {
-    document.getElementById("end_game_sound")?.click();
+    document.getElementById("endSound")?.click();
+};
+export const simulateTakeSound = (): void => {
+    document.getElementById("takeSound")?.click();
+};
+export const simulateCastleSound = (): void => {
+    document.getElementById("castleSound")?.click();
 };
