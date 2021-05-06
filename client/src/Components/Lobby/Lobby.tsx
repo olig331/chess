@@ -27,6 +27,7 @@ export const Lobby: React.FC<PassedProps> = (props) => {
 
     useEffect(() => {
         socket.on("getMatchSetUpData", (payload: SetUpData): void => {
+            console.log("set up data", payload)
             setColor(payload.color)
             setOppodId(payload.oppoId)
             simulateStartSound();
@@ -39,10 +40,10 @@ export const Lobby: React.FC<PassedProps> = (props) => {
 
             <div className="game_wrapper">
                 <FallenPiecesContext.Provider value={{ fallenPieces, setFallenPieces }}>
-                    <GameInstance
+                    {color && <GameInstance
                         color={color}
                         oppoId={oppoId}
-                    />
+                    />}
                 </FallenPiecesContext.Provider>
             </div>
             <GameOver />

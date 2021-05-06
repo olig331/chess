@@ -1,6 +1,4 @@
 type GameState = {
-    oppoId: string;
-    color: string;
     board: Board;
     castleSwapStatus: CastleStatus;
     yourTurn: boolean;

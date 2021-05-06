@@ -6,7 +6,7 @@ import { getPieceColor, getSqaureColor } from '../GameInstance/GameFunctions/get
 import { createDragImage } from '../GameInstance/GameFunctions/createDragImage';
 import { removeHighlights } from '../GameInstance/GameFunctions/highlightFunctions';
 import { MovesContext } from './ChessBoard';
-import { BoardContext, FallenPiecesContext, TurnContext, EnpassantContext } from '../GameInstance/GameInstance';
+import { BoardContext, TurnContext, EnpassantContext } from '../GameInstance/GameInstance';
 import useWindowDimensions from '../../CustomHooks/WIndowDimensions';
 const socket = require('../../SocketConnection/Socket').socket;
 
@@ -18,13 +18,13 @@ interface PassedProps {
     color: string;
     setUpgrade: (val: boolean, move: MoveArr) => void
     updatePieces: (move: MoveArr) => void
+    updateFallenPieces: (taking: Taking) => void
 }
 
-export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapStatus, color, setUpgrade, updatePieces }) => {
+export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapStatus, color, setUpgrade, updatePieces, updateFallenPieces }) => {
 
     const [dragActive, set_dragActive] = useState<string>("0")
     const { moves, set_moves } = useContext(MovesContext);
-    const { setFallenPieces } = useContext(FallenPiecesContext);
     const { yourTurn, setTurn } = useContext(TurnContext)
     const { board, setBoard } = useContext(BoardContext)
     const { enpassant } = useContext(EnpassantContext);
@@ -85,7 +85,7 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
                 }
                 let enpassantData: any = move.hasOwnProperty("enpassant") ? move.enpassant : "";
                 updatePieces(move);
-                setFallenPieces(move.taking)
+                updateFallenPieces(move.taking)
                 setBoard(copy)
                 set_moves([])
                 removeHighlights()

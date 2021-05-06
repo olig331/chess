@@ -9,6 +9,9 @@ interface PassedProps {
 }
 
 export const GameInfo: React.FC<PassedProps> = ({ oppoId, fallenPieces, color }) => {
+
+    console.log(color, fallenPieces)
+
     return (
         <div className="game_info_container">
             <div className="player you">

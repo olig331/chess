@@ -22,18 +22,8 @@ interface Props {
 
 export class GameInstance extends React.Component<Props> {
     static contextType = FallenPiecesContext
-    public color: string;
-    public oppoId: string;
-
-    constructor(props: any) {
-        super(props);
-        this.color = this.props.color
-        this.oppoId = this.props.oppoId
-    }
 
     state: GameState = {
-        oppoId: "",
-        color: "",
         board: initBoard,
         castleSwapStatus: { "qside": true, "kside": true },
         yourTurn: true,
@@ -43,9 +33,11 @@ export class GameInstance extends React.Component<Props> {
         yourPieces: [],
     }
 
+
+
     componentDidMount() {
-        const turn: boolean = this.color === "white";
-        const pieces: string[] = this.getStartingPieces(this.color);
+        const turn: boolean = this.props.color === "white";
+        const pieces: string[] = this.getStartingPieces(this.props.color);
         this.setState({ yourTurn: turn, yourPieces: pieces });
 
         socket.on("recieveMove", (payload: string): void => {
@@ -95,21 +87,21 @@ export class GameInstance extends React.Component<Props> {
     };
 
     public handleRecieveMove = (): void => {
-        const amIChecked: boolean = checkForCheck(this.state.board, this.state.color);
+        const amIChecked: boolean = checkForCheck(this.state.board, this.props.color);
         const isMate: boolean = this.checkForMate()
         if (amIChecked) {
-            const kingTag: string = this.state.color === "white" ? "K" : "k"
+            const kingTag: string = this.props.color === "white" ? "K" : "k"
             let pos: string[] = Object.keys(this.state.board).filter((key: string) => this.state.board[key] === kingTag);
             document.getElementsByClassName(`node ${pos[0]}`)[0].className = `node ${pos[0]} checked`
             if (isMate) {
-                socket.emit("lostGame", this.state.oppoId)
+                socket.emit("lostGame", this.props.oppoId)
                 this.setState({ gameOver: true, gameOverMessage: "Match Lost!!" })
                 simulateGameOverSound()
             }
         } else {
             // check for stalemate
             if (isMate) {
-                socket.emit("drawnGame", this.state.oppoId);
+                socket.emit("drawnGame", this.props.oppoId);
                 this.setState({ gameOver: true, gameOverMessage: "Match Drawn!!" })
             }
             return;
@@ -130,7 +122,8 @@ export class GameInstance extends React.Component<Props> {
     }
 
     public updateFallenPieces = (taking: Taking): void => {
-        let fallenPiecesCopy: FallenPieces = this.context.fallenPieces;
+        let fallenPiecesCopy: FallenPieces = { ...this.context.fallenPieces };
+        console.log("vairable", fallenPiecesCopy)
         if (taking.piece && taking.piece.charCodeAt(0) < 91) {
             fallenPiecesCopy.white.push(taking.piece);
         } else {
@@ -138,6 +131,7 @@ export class GameInstance extends React.Component<Props> {
                 fallenPiecesCopy.black.push(taking.piece);
             }
         }
+        console.log("copy in update fallen pieces", fallenPiecesCopy);
         this.context.setFallenPieces(fallenPiecesCopy)
         return;
     };
@@ -166,7 +160,7 @@ export class GameInstance extends React.Component<Props> {
         this.updateFallenPieces(data.taking);
         this.setState({ board: copy, upgrade: false, upgradeData: "", moves: [], yourTurn: false });
         simulateMoveSound()
-        socket.emit("sendMove", JSON.stringify({ oppoId: this.state.oppoId, data: copy, enpassant: "" }));
+        socket.emit("sendMove", JSON.stringify({ oppoId: this.props.oppoId, data: copy, enpassant: "" }));
         return
     }
 
@@ -188,11 +182,12 @@ export class GameInstance extends React.Component<Props> {
                     <BoardContext.Provider value={{ board, setBoard }}>
                         <EnpassantContext.Provider value={{ enpassant, setEnpassant }}>
                             <ChessBoard
-                                oppoId={this.state.oppoId}
+                                oppoId={this.props.oppoId}
                                 castleSwapStatus={this.state.castleSwapStatus}
-                                color={this.state.color}
+                                color={this.props.color}
                                 setUpgrade={this.setUpgrade}
                                 updatePieces={this.updatePieces}
+                                updateFallenPieces={this.updateFallenPieces}
                             />
                         </EnpassantContext.Provider>
                     </BoardContext.Provider>
@@ -200,12 +195,12 @@ export class GameInstance extends React.Component<Props> {
                 <Audio />
                 <PawnUpgrade
                     selectUpgradePiece={this.selectUpgradePiece}
-                    color={this.state.color}
+                    color={this.props.color}
                     showUpgrade={this.state.upgrade}
                 />
                 <GameInfo
-                    oppoId={this.state.oppoId}
-                    color={this.state.color}
+                    oppoId={this.props.oppoId}
+                    color={this.props.color}
                     fallenPieces={this.context.fallenPieces}
                 />
             </div>
