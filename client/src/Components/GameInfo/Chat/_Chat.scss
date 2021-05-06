@@ -25,6 +25,8 @@
         overflow-y: scroll;
         //border: 2px solid black;
         padding: 10px;
+        display: flex;
+        flex-direction: column;
     }
     textarea {
         margin-left: -1px;
@@ -68,19 +70,37 @@
         }
     }
 
-    .your_messaage {
-        background-color: #026d6d;
-        padding: 8px;
-        max-width: 60%;
+    .message {
+        width: 100%;
         color: white;
         font-size: 18px;
         margin: 2px 0px;
         border-radius: 1rem;
+        padding: 8px;
+    }
+
+    .your_messaage {
+        display: flex;
+        justify-content: flex-start;
+        position: relative;
+        span {
+            max-width: 60%;
+            //border: 2px solid green;
+            background-color: #026d6d;
+            border-radius: 1rem;
+            padding: 8px;
+        }
     }
 
     .their_message {
-        background-color: rgb(240, 94, 94);
-        padding: 15px;
-        color: white;
+        display: flex;
+        justify-content: flex-end;
+        span {
+            max-width: 60%;
+            //border: 2px solid green;
+            background-color: rgb(240, 94, 94);
+            border-radius: 1rem;
+            padding: 8px;
+        }
     }
 }

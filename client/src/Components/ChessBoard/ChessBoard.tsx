@@ -38,18 +38,20 @@ export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, co
                 : { transform: "rotate(0deg)", width: `${boardWidthHeight}px`, height: `${boardWidthHeight}px` }}
         >
             {Object.keys(board).map((key: string, index: number) => (
-                <MovesContext.Provider value={{ moves, set_moves }}>
-                    <Square
-                        pos={key}
-                        index={index}
-                        oppoId={oppoId}
-                        castleSwapStatus={castleSwapStatus}
-                        color={color}
-                        setUpgrade={setUpgrade}
-                        updatePieces={updatePieces}
-                        updateFallenPieces={updateFallenPieces}
-                    />
-                </MovesContext.Provider>
+                <React.Fragment key={index}>
+                    <MovesContext.Provider value={{ moves, set_moves }}>
+                        <Square
+                            pos={key}
+                            index={index}
+                            oppoId={oppoId}
+                            castleSwapStatus={castleSwapStatus}
+                            color={color}
+                            setUpgrade={setUpgrade}
+                            updatePieces={updatePieces}
+                            updateFallenPieces={updateFallenPieces}
+                        />
+                    </MovesContext.Provider>
+                </React.Fragment>
             ))}
         </div>
     )

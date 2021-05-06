@@ -21,21 +21,23 @@ export const Chat: React.FC<PassedProps> = ({ oppoId }) => {
 
     const sendMessage = (e: React.FormEvent<HTMLButtonElement>): void => {
         e.preventDefault()
-        if (message) {
+        console.log(message.split("").length, message.split(""))
+        if (message.split("").length > 1) {
             console.log("sending message")
             socket.emit("sendingChatMessage", { id: oppoId, message: message });
-            const newMessage = <li className="your_messaage">{message}</li>
+            const newMessage = <li className="your_messaage message"><span className="text">{message}</span></li>
             set_messageHistory(prev => [...prev, newMessage]);
             set_message("");
             let ele: any = document.getElementById("write_message");
             ele.value = "";
         }
+        set_message("")
         return;
     }
 
     useEffect(() => {
         socket.on("recieveChatMessage", (incomingMessage: string) => {
-            const newMessage = <li className="their_message">{incomingMessage}</li>
+            const newMessage = <li className="their_message message"><span className="text">{incomingMessage}</span></li>
             set_messageHistory(prev => [...prev, newMessage]);
         });
     }, []);
@@ -44,15 +46,22 @@ export const Chat: React.FC<PassedProps> = ({ oppoId }) => {
         set_messageHistory([])
     }
 
+    const handleKeyUp = (e: any) => {
+        if (e.keyCode === 13) {
+            sendMessage(e);
+        }
+        return;
+    }
+
     return (
         <div className="chat_container">
             <span title="clear chat" className="clear_chat" onClick={clearChat}><AiFillCloseCircle /></span>
             <div className="messages_display">
                 <ul>
-                    {messageHistory.map((message: HTMLLIElement) => (
-                        <>
+                    {messageHistory.map((message: HTMLLIElement, index: number) => (
+                        <React.Fragment key={index}>
                             {message}
-                        </>
+                        </React.Fragment>
                     ))}
                 </ul>
             </div>
@@ -61,6 +70,8 @@ export const Chat: React.FC<PassedProps> = ({ oppoId }) => {
                 id="write_message"
                 name="write_message"
                 className="write_message"
+                value={message}
+                onKeyUp={(e: any) => handleKeyUp(e)}
                 onChange={(e: ChatEvent) => handleWriteMessage(e)}>
             </textarea>
             <button
