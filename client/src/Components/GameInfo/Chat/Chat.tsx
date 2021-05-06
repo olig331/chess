@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { AiFillCloseCircle } from 'react-icons/ai'
 const socket = require('../../../SocketConnection/Socket').socket
 
 interface PassedProps {
@@ -39,8 +40,13 @@ export const Chat: React.FC<PassedProps> = ({ oppoId }) => {
         });
     }, []);
 
+    const clearChat = (): void => {
+        set_messageHistory([])
+    }
+
     return (
         <div className="chat_container">
+            <span title="clear chat" className="clear_chat" onClick={clearChat}><AiFillCloseCircle /></span>
             <div className="messages_display">
                 <ul>
                     {messageHistory.map((message: HTMLLIElement) => (
@@ -51,6 +57,7 @@ export const Chat: React.FC<PassedProps> = ({ oppoId }) => {
                 </ul>
             </div>
             <textarea
+                placeholder="Write a message..."
                 id="write_message"
                 name="write_message"
                 className="write_message"

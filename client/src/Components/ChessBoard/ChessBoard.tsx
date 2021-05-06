@@ -1,4 +1,5 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
+import useWindowDimensions from '../../CustomHooks/WIndowDimensions';
 import { BoardContext } from '../GameInstance/GameInstance';
 import { Square } from './Square';
 
@@ -16,13 +17,24 @@ export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, co
 
     const [moves, set_moves] = useState<MoveArr[]>([])
     const { board } = useContext(BoardContext);
+    const { width, height } = useWindowDimensions();
+    const [boardWidthHeight, set_boardWidthHeight] = useState<number>();
+
+    useEffect(() => {
+        if (height < width) {
+            set_boardWidthHeight(height)
+        } else {
+            set_boardWidthHeight(width)
+        }
+        return
+    }, [width, height])
 
     return (
         <div
             className="board_wrapper"
             style={color === "black"
-                ? { transform: "rotate(180deg)" }
-                : { transform: "rotate(0deg)" }}
+                ? { transform: "rotate(180deg)", width: `${boardWidthHeight}px`, height: `${boardWidthHeight}px` }
+                : { transform: "rotate(0deg)", width: `${boardWidthHeight}px`, height: `${boardWidthHeight}px` }}
         >
             {Object.keys(board).map((key: string, index: number) => (
                 <MovesContext.Provider value={{ moves, set_moves }}>

@@ -16,9 +16,12 @@ export const Lobby: React.FC<PassedProps> = (props) => {
 
 
     return (
-        <div>
+        <div className="lobby_container">
             <p>Lobby: {lobbyId}</p>
-            <GameInstance />
+
+            <div className="game_wrapper">
+                <GameInstance />
+            </div>
         </div>
     )
 }

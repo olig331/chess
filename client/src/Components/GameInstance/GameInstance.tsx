@@ -193,7 +193,7 @@ export class GameInstance extends React.Component {
         const enpassant = this.state.enpassant;
         const { setEnpassant } = this;
         return (
-            <div style={this.state.gameOver ? { pointerEvents: "none" } : { pointerEvents: "all" }}>
+            <div style={this.state.gameOver ? { pointerEvents: "none" } : { pointerEvents: "all" }} className="game_instance_container">
                 <GameOver
                     gameOver={this.state.gameOver}
                     gameOverMessage={this.state.gameOverMessage}

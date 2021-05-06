@@ -1,5 +1,86 @@
 .chat_container {
     width: 400px;
-    height: 700px;
+    height: 500px;
     border: 2px solid #00b1b1;
+    position: relative;
+
+    .clear_chat {
+        position: absolute;
+        right: 18px;
+        top: 5px;
+        font-size: 32px;
+        transition: 0.15s linear;
+        color: #00b1b1;
+        &:hover {
+            transition: 0.15s linear;
+            transform: scale(1.05);
+            cursor: pointer;
+            color: rgb(240, 94, 94);
+        }
+    }
+
+    .messages_display {
+        width: 100%;
+        height: 400px;
+        overflow-y: scroll;
+        //border: 2px solid black;
+        padding: 10px;
+    }
+    textarea {
+        margin-left: -1px;
+        resize: none;
+        width: 100%;
+        height: 100px;
+        position: absolute;
+        bottom: 0;
+        border-top: 2px solid #00b1b1;
+        border-bottom: none;
+        border-left: 1px solid #00b1b1;
+        padding: 10px 102px 5px 10px;
+        outline: none;
+        letter-spacing: 0.045rem;
+        font-size: 1rem;
+        &::placeholder {
+            color: #222;
+            font-size: 1rem;
+            letter-spacing: 0.05rem;
+        }
+    }
+    .send_message {
+        height: 100px;
+        width: 100px;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        border: 2px solid #00b1b1;
+        outline: none;
+        transition: 0.1s linear;
+        background-color: #00b1b1;
+        color: white;
+        font-size: 24px;
+        letter-spacing: 0.12rem;
+        font-family: "Lato";
+        &:hover {
+            transition: 0.1s linear;
+            cursor: pointer;
+            background-color: #00c4c4;
+            color: white;
+        }
+    }
+
+    .your_messaage {
+        background-color: #026d6d;
+        padding: 8px;
+        max-width: 60%;
+        color: white;
+        font-size: 18px;
+        margin: 2px 0px;
+        border-radius: 1rem;
+    }
+
+    .their_message {
+        background-color: rgb(240, 94, 94);
+        padding: 15px;
+        color: white;
+    }
 }

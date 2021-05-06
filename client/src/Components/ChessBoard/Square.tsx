@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { getImage } from '../../HelperFunctions/getImage';
 import { getLegalMoves } from '../GameInstance/GameFunctions/getLegalMoves';
 import { simulateCastleSound, simulateMoveSound, simulateTakeSound } from '../../HelperFunctions/triggerAudio'
@@ -7,6 +7,7 @@ import { createDragImage } from '../GameInstance/GameFunctions/createDragImage';
 import { removeHighlights } from '../GameInstance/GameFunctions/highlightFunctions';
 import { MovesContext } from './ChessBoard';
 import { BoardContext, FallenPiecesContext, TurnContext, EnpassantContext } from '../GameInstance/GameInstance';
+import useWindowDimensions from '../../CustomHooks/WIndowDimensions';
 const socket = require('../../SocketConnection/Socket').socket;
 
 interface PassedProps {
@@ -27,6 +28,16 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
     const { yourTurn, setTurn } = useContext(TurnContext)
     const { board, setBoard } = useContext(BoardContext)
     const { enpassant } = useContext(EnpassantContext);
+    const { width, height } = useWindowDimensions();
+    const [nodeWidthHeight, set_nodeWidthHeight] = useState<number>();
+
+    useEffect(() => {
+        if (width > height) {
+            set_nodeWidthHeight(Math.floor(height / 8))
+        } else {
+            set_nodeWidthHeight(Math.floor(width / 8))
+        }
+    }, [width, height])
 
     const handleDragEnter = (e: SquareEvent): void => {
         e.preventDefault();
@@ -102,10 +113,22 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
             onDragStart={(e: SquareEvent) => handleMove(e, pos, index)}
             onDragEnd={() => set_dragActive("0")}
             key={index}
-            style={color === "black" ? { transform: "rotate(180deg)", background: getSqaureColor(index + 1) } : { transform: "rotate(0deg)", background: getSqaureColor(index + 1) }}
+            style={color === "black"
+                ? {
+                    transform: "rotate(180deg)",
+                    background: getSqaureColor(index + 1),
+                    width: `${nodeWidthHeight}px`,
+                    height: `${nodeWidthHeight}px`
+                }
+                : {
+                    transform: "rotate(0deg)",
+                    background: getSqaureColor(index + 1),
+                    width: `${nodeWidthHeight}px`,
+                    height: `${nodeWidthHeight}px`
+                }}
             className={`node ${pos}`}>
             <span data-active={dragActive} className="img_parent">{getImage(board[pos])}</span>
             <p>{pos[0].toUpperCase()}{pos[1]}</p>
-        </div>
+        </div >
     )
 }

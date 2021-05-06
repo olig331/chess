@@ -1,14 +1,16 @@
 .board_wrapper {
     display: flex;
     flex-wrap: wrap;
-    width: 810px;
+    max-width: 1000px;
+    max-height: 1000px;
     &::selection {
         color: none;
         background: none;
     }
     .node {
-        width: 100px;
-        height: 100px;
+        max-width: 125px;
+        max-height: 125px;
+
         //border: 2px solid slateblue;
         display: flex;
         justify-content: center;
@@ -28,14 +30,19 @@
         }
 
         .img_parent[data-active="0"] {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             &::selection {
                 color: none;
                 background: none;
             }
             opacity: 1;
             img {
-                width: 75px;
-                height: 75px;
+                width: 75%;
+                height: 75%;
                 &::selection {
                     color: none;
                     background: none;
@@ -43,14 +50,19 @@
             }
         }
         .img_parent[data-active="1"] {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             &::selection {
                 color: none;
                 background: none;
             }
             opacity: 0;
             img {
-                width: 75px;
-                height: 75px;
+                width: 75%;
+                height: 75%;
                 &::selection {
                     color: none;
                     background: none;
