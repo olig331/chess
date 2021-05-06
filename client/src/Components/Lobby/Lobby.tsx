@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react'
 import { GameInstance } from '../GameInstance/GameInstance'
 import { GameOver } from '../GameOver/GameOver';
 import { simulateStartSound } from '../../HelperFunctions/triggerAudio';
+import { FallenPiecesContext } from '../../Context/Context';
+
 const socket = require('../../SocketConnection/Socket').socket;
 
 interface PassedProps {
     match: any
 }
 
-const FallenPiecesContext: any = React.createContext({});
 const ColorContext: any = React.createContext("");
 const OppoIdContext: any = React.createContext("");
 
@@ -49,4 +50,4 @@ export const Lobby: React.FC<PassedProps> = (props) => {
     )
 }
 
-export { FallenPiecesContext, ColorContext, OppoIdContext }
+export { ColorContext, OppoIdContext }

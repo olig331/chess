@@ -7,7 +7,7 @@ import { PawnUpgrade } from './PawnUpgrade';
 import { getLegalMoves } from './GameFunctions/getLegalMoves';
 import { initBoard } from './initialBoard'
 import { GameInfo } from '../GameInfo/GameInfo';
-import { FallenPiecesContext } from '../Lobby/Lobby';
+import { FallenPiecesContext } from '../../Context/Context';
 
 const socket = require('../../SocketConnection/Socket').socket;
 
