@@ -1,52 +1,53 @@
 import React from 'react';
 import { ChessBoard } from '../ChessBoard/ChessBoard';
 import { Audio } from '../Audio/Audio'
-import { simulateStartSound, simulateMoveSound, simulateGameOverSound, simulateTakeSound } from '../../HelperFunctions/triggerAudio';
+import { simulateMoveSound, simulateGameOverSound, simulateTakeSound } from '../../HelperFunctions/triggerAudio';
 import { checkForCheck } from './GameFunctions/checkForCheck';
 import { PawnUpgrade } from './PawnUpgrade';
 import { getLegalMoves } from './GameFunctions/getLegalMoves';
 import { initBoard } from './initialBoard'
-import { GameOver } from '../GameOver/GameOver';
 import { GameInfo } from '../GameInfo/GameInfo';
+import { FallenPiecesContext } from '../Lobby/Lobby';
 
 const socket = require('../../SocketConnection/Socket').socket;
 
-
-
-const FallenPiecesContext: any = React.createContext({});
 const TurnContext: any = React.createContext(null);
 const BoardContext: any = React.createContext(null);
 const EnpassantContext: any = React.createContext(null);
 
-export class GameInstance extends React.Component {
+interface Props {
+    color: string;
+    oppoId: string;
+}
+
+export class GameInstance extends React.Component<Props> {
+    static contextType = FallenPiecesContext
+    public color: string;
+    public oppoId: string;
+
+    constructor(props: any) {
+        super(props);
+        this.color = this.props.color
+        this.oppoId = this.props.oppoId
+    }
 
     state: GameState = {
         oppoId: "",
         color: "",
         board: initBoard,
         castleSwapStatus: { "qside": true, "kside": true },
-        fallenPieces: { "white": [], "black": [] },
         yourTurn: true,
         enpassant: "",
         upgrade: false,
         upgradeData: "",
         yourPieces: [],
-        gameOver: false,
-        gameOverMessage: "",
     }
 
     componentDidMount() {
-        socket.on("getMatchSetUpData", (payload: SetUpData): void => {
-            const turn: boolean = payload.color === "white";
-            const pieces: string[] = this.getStartingPieces(payload.color)
-            this.setState({
-                oppoId: payload.oppoId,
-                color: payload.color,
-                yourTurn: turn,
-                yourPieces: pieces
-            });
-            simulateStartSound();
-        });
+        const turn: boolean = this.color === "white";
+        const pieces: string[] = this.getStartingPieces(this.color);
+        this.setState({ yourTurn: turn, yourPieces: pieces });
+
         socket.on("recieveMove", (payload: string): void => {
             const data: MovePayload = JSON.parse(payload);
             this.updatePiecesOnReciveMove(data.taking)
@@ -59,15 +60,6 @@ export class GameInstance extends React.Component {
             }
             simulateMoveSound();
         });
-        socket.on("stalemate", (): void => {
-            this.setState({ gameOver: true, gameOverMessage: "Match Drawn!!" });
-            simulateGameOverSound()
-        })
-        socket.on("wonGame", (): void => {
-            this.setState({ gameOver: true, gameOverMessage: "Match Won" });
-            simulateGameOverSound()
-        });
-
     };
 
     public updatePiecesOnReciveMove = (taking: Taking): void => {
@@ -76,7 +68,7 @@ export class GameInstance extends React.Component {
             const index: number = copy.indexOf(taking.pos);
             copy.splice(index, 1);
             this.setState({ yourPieces: copy })
-            this.setFallenPieces(taking)
+            this.updateFallenPieces(taking)
         }
         return;
     }
@@ -137,8 +129,8 @@ export class GameInstance extends React.Component {
         return true;
     }
 
-    public setFallenPieces = (taking: Taking): void => {
-        let fallenPiecesCopy: FallenPieces = { ...this.state.fallenPieces };
+    public updateFallenPieces = (taking: Taking): void => {
+        let fallenPiecesCopy: FallenPieces = this.context.fallenPieces;
         if (taking.piece && taking.piece.charCodeAt(0) < 91) {
             fallenPiecesCopy.white.push(taking.piece);
         } else {
@@ -146,7 +138,7 @@ export class GameInstance extends React.Component {
                 fallenPiecesCopy.black.push(taking.piece);
             }
         }
-        this.setState({ fallenPieces: fallenPiecesCopy });
+        this.context.setFallenPieces(fallenPiecesCopy)
         return;
     };
 
@@ -171,7 +163,7 @@ export class GameInstance extends React.Component {
             let curr: Effects = data.effects[i];
             copy[curr.pos] = curr.piece;
         };
-        this.setFallenPieces(data.taking);
+        this.updateFallenPieces(data.taking);
         this.setState({ board: copy, upgrade: false, upgradeData: "", moves: [], yourTurn: false });
         simulateMoveSound()
         socket.emit("sendMove", JSON.stringify({ oppoId: this.state.oppoId, data: copy, enpassant: "" }));
@@ -184,8 +176,6 @@ export class GameInstance extends React.Component {
     }
 
     render() {
-        const fallenPieces = this.state.fallenPieces;
-        const { setFallenPieces } = this;
         const yourTurn = this.state.yourTurn;
         const { setTurn } = this;
         const { setBoard } = this;
@@ -193,27 +183,20 @@ export class GameInstance extends React.Component {
         const enpassant = this.state.enpassant;
         const { setEnpassant } = this;
         return (
-            <div style={this.state.gameOver ? { pointerEvents: "none" } : { pointerEvents: "all" }} className="game_instance_container">
-                <GameOver
-                    gameOver={this.state.gameOver}
-                    gameOverMessage={this.state.gameOverMessage}
-                />
-                <FallenPiecesContext.Provider value={{ fallenPieces, setFallenPieces }}>
-                    <TurnContext.Provider value={{ yourTurn, setTurn }}>
-                        <BoardContext.Provider value={{ board, setBoard }}>
-                            <EnpassantContext.Provider value={{ enpassant, setEnpassant }}>
-                                <ChessBoard
-                                    oppoId={this.state.oppoId}
-                                    castleSwapStatus={this.state.castleSwapStatus}
-                                    color={this.state.color}
-                                    setUpgrade={this.setUpgrade}
-                                    updatePieces={this.updatePieces}
-                                />
-                            </EnpassantContext.Provider>
-                        </BoardContext.Provider>
-                    </TurnContext.Provider>
-                </FallenPiecesContext.Provider>
-
+            <div className="game_instance_container">
+                <TurnContext.Provider value={{ yourTurn, setTurn }}>
+                    <BoardContext.Provider value={{ board, setBoard }}>
+                        <EnpassantContext.Provider value={{ enpassant, setEnpassant }}>
+                            <ChessBoard
+                                oppoId={this.state.oppoId}
+                                castleSwapStatus={this.state.castleSwapStatus}
+                                color={this.state.color}
+                                setUpgrade={this.setUpgrade}
+                                updatePieces={this.updatePieces}
+                            />
+                        </EnpassantContext.Provider>
+                    </BoardContext.Provider>
+                </TurnContext.Provider>
                 <Audio />
                 <PawnUpgrade
                     selectUpgradePiece={this.selectUpgradePiece}
@@ -223,7 +206,7 @@ export class GameInstance extends React.Component {
                 <GameInfo
                     oppoId={this.state.oppoId}
                     color={this.state.color}
-                    fallenPieces={this.state.fallenPieces}
+                    fallenPieces={this.context.fallenPieces}
                 />
             </div>
         )

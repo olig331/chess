@@ -1,11 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { simulateGameOverSound } from '../../HelperFunctions/triggerAudio';
 
-interface PassedProps {
-    gameOver: boolean;
-    gameOverMessage: string
-}
+const socket = require('../../SocketConnection/Socket').socket
 
-export const GameOver: React.FC<PassedProps> = ({ gameOver, gameOverMessage }) => {
+export const GameOver: React.FC = () => {
+
+    const [gameOver, set_gameOver] = useState<boolean>(false)
+    const [gameOverMessage, set_gameOverMessage] = useState<string>("")
+
+    useEffect(() => {
+        socket.on("stalemate", (): void => {
+            set_gameOver(true)
+            set_gameOverMessage("Stalemate!")
+            simulateGameOverSound()
+        })
+        return;
+    }, [])
+
+    useEffect(() => {
+        socket.on("wonGame", (): void => {
+            set_gameOver(true)
+            set_gameOverMessage("You Won!")
+            simulateGameOverSound()
+        });
+        return;
+    }, [])
+
     return (
         <>
             { gameOver &&

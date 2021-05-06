@@ -3,14 +3,11 @@ type GameState = {
     color: string;
     board: Board;
     castleSwapStatus: CastleStatus;
-    fallenPieces: FallenPieces;
     yourTurn: boolean;
     enpassant: string;
     upgrade: boolean;
     upgradeData: any;
     yourPieces: string[];
-    gameOver: boolean;
-    gameOverMessage: string;
 };
 
 type Taking = { [key: string]: string };
