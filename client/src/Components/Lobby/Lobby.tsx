@@ -5,11 +5,13 @@ import { simulateStartSound } from '../../HelperFunctions/triggerAudio';
 import { FallenPiecesContext } from '../../Context/Context';
 import { FallenPieces } from '../FallenPieces/FallenPieces';
 import { GameInfo } from '../GameInfo/GameInfo';
+import { FaChessKing } from 'react-icons/fa';
+import useWindowDimensions from '../../CustomHooks/WIndowDimensions';
 
 const socket = require('../../SocketConnection/Socket').socket;
 
 interface PassedProps {
-    match: any
+    match: any;
 }
 
 const ColorContext: any = React.createContext("");
@@ -21,6 +23,10 @@ export const Lobby: React.FC<PassedProps> = (props) => {
     const [oppoId, setOppodId] = useState<string>("");
     const [color, setColor] = useState<string>("");
     const [fallenPieces, setFallenPieces] = useState<FallenPieces>({ "white": [], "black": [] });
+    const { width, height } = useWindowDimensions()
+    const [boardWidthHeight, set_boardWidthHeight] = useState<number>(0);
+    const [gameOver, set_gameOver] = useState<boolean>(false);
+    const [gameOverMessage, setGamOverMessage] = useState<string>("");
 
     useEffect(() => {
         socket.emit("joinedLobby", props.match.params.lobbyId);
@@ -36,30 +42,69 @@ export const Lobby: React.FC<PassedProps> = (props) => {
         });
     }, [])
 
+    const settingGameOver = (status: boolean, message: string) => {
+        set_gameOver(status)
+        setGamOverMessage(message)
+    }
+
+    useEffect(() => {
+        if (width < height) {
+            if (width > 1016) {
+                let val: number = Math.ceil(width / 2);
+                set_boardWidthHeight(val)
+                return
+            } else {
+                set_boardWidthHeight(width)
+            }
+        } else {
+            if (width > 1016) {
+                let val: number = Math.ceil(width / 2)
+                set_boardWidthHeight(val);
+                return
+            }
+            set_boardWidthHeight(height);
+        }
+        return
+    }, [width, height]);
+
     return (
         <div className="lobby_container">
-            <p>Lobby: {lobbyId}</p>
+            <p className="lobby_id"><span>Lobby Id:</span> {lobbyId}</p>
 
-            <div className="game_wrapper">
-                <FallenPiecesContext.Provider value={{ fallenPieces, setFallenPieces }}>
-                    <div className="opponent player">
-                        <FallenPieces
-                            pieces={color === "white" ? fallenPieces.black : fallenPieces.white}
-                        />
-                    </div>
+            {/* <div className="game_wrapper"> */}
+            <FallenPiecesContext.Provider value={{ fallenPieces, setFallenPieces }}>
+                <div className="opponent player">
+                    <div className="playerIcon" style={color === "white" ? { color: "black" } : { color: "white" }}><FaChessKing /></div>
+                    <p>:</p>
+                    <FallenPieces
+                        pieces={color === "white" ? fallenPieces.white : fallenPieces.black}
+                    />
+                </div>
+                <div className="game">
                     {color && <GameInstance
                         color={color}
                         oppoId={oppoId}
+                        boardWidthHeight={boardWidthHeight}
+                        gameOver={gameOver}
+                        settingGameOver={settingGameOver}
                     />}
-                    <div className="you player">
-                        <FallenPieces
-                            pieces={color === "white" ? fallenPieces.white : fallenPieces.black}
-                        />
-                    </div>
-                </FallenPiecesContext.Provider>
-            </div>
-            <GameOver />
-            <GameInfo oppoId={oppoId} />
+                </div>
+                <div className="you player">
+                    <div className="playerIcon" style={color === "white" ? { color: "white" } : { color: "black" }}><FaChessKing /></div>
+                    <p>:</p>
+                    <FallenPieces
+                        pieces={color === "white" ? fallenPieces.black : fallenPieces.white}
+                    />
+                </div>
+            </FallenPiecesContext.Provider>
+            {/* </div> */}
+            <GameOver
+                gameOver={gameOver}
+                gameOverMessage={gameOverMessage}
+                settingGameOver={settingGameOver}
+            />
+            <div className="chat"><GameInfo oppoId={oppoId} boardWidthHeight={boardWidthHeight} /></div>
+            <div className="image_block"></div>
         </div>
     )
 }

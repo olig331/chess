@@ -33,7 +33,7 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
 
     useEffect(() => {
         if (width < height) {
-            if (width > 1280) {
+            if (width > 1016) {
                 let val: number = width / 2
                 set_nodeWidthHeight(Math.floor(val / 8))
                 return
@@ -42,7 +42,7 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
                 return
             }
         } else {
-            if (width > 1280) {
+            if (width > 1016) {
                 let val: number = Math.ceil(width / 2)
                 set_nodeWidthHeight(val / 8)
                 return

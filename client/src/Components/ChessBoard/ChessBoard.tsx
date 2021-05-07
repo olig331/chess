@@ -1,5 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
-import useWindowDimensions from '../../CustomHooks/WIndowDimensions';
+import React, { useContext, useState } from 'react'
 import { BoardContext } from '../GameInstance/GameInstance';
 import { Square } from './Square';
 
@@ -9,38 +8,16 @@ interface PassedProps {
     color: string;
     setUpgrade: (val: boolean, move: MoveArr) => void
     updatePieces: (move: MoveArr) => void;
-    updateFallenPieces: (taking: Taking) => void
+    updateFallenPieces: (taking: Taking) => void;
+    boardWidthHeight: number
 };
 
 const MovesContext: any = React.createContext([]);
 
-export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, color, setUpgrade, updatePieces, updateFallenPieces }) => {
+export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, color, setUpgrade, updatePieces, updateFallenPieces, boardWidthHeight }) => {
 
     const [moves, set_moves] = useState<MoveArr[]>([]);
     const { board } = useContext(BoardContext);
-    const { width, height } = useWindowDimensions();
-    const [boardWidthHeight, set_boardWidthHeight] = useState<number>();
-
-    useEffect(() => {
-        if (width < height) {
-            if (width > 1280) {
-                let val: number = Math.ceil(width / 2);
-                set_boardWidthHeight(val)
-                return
-            } else {
-                set_boardWidthHeight(width)
-            }
-        } else {
-            if (width > 1280) {
-                let val: number = Math.ceil(width / 2)
-                set_boardWidthHeight(val);
-                return
-            }
-            set_boardWidthHeight(height);
-        }
-        return
-    }, [width, height]);
-
 
     return (
         <div

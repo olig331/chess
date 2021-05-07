@@ -3,10 +3,11 @@ import { AiFillCloseCircle } from 'react-icons/ai'
 const socket = require('../../../SocketConnection/Socket').socket
 
 interface PassedProps {
-    oppoId: string
+    oppoId: string;
+    boardWidthHeight: number
 };
 
-export const Chat: React.FC<PassedProps> = ({ oppoId }) => {
+export const Chat: React.FC<PassedProps> = ({ oppoId, boardWidthHeight }) => {
 
     const [message, set_message] = useState<string>("");
     const [messageHistory, set_messageHistory] = useState<any[]>([]);
@@ -54,7 +55,7 @@ export const Chat: React.FC<PassedProps> = ({ oppoId }) => {
     }
 
     return (
-        <div className="chat_container">
+        <div className="chat_container" style={{ height: "calc(100% - 58px)" }}>
             <span title="clear chat" className="clear_chat" onClick={clearChat}><AiFillCloseCircle /></span>
             <div className="messages_display">
                 <ul>

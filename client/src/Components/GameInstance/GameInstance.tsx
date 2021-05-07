@@ -17,6 +17,9 @@ const EnpassantContext: any = React.createContext(null);
 interface Props {
     color: string;
     oppoId: string;
+    boardWidthHeight: number;
+    gameOver: boolean;
+    settingGameOver: (status: boolean, message: string) => void;
 }
 
 export class GameInstance extends React.Component<Props> {
@@ -31,8 +34,6 @@ export class GameInstance extends React.Component<Props> {
         upgradeData: "",
         yourPieces: [],
     }
-
-
 
     componentDidMount() {
         const turn: boolean = this.props.color === "white";
@@ -94,14 +95,14 @@ export class GameInstance extends React.Component<Props> {
             document.getElementsByClassName(`node ${pos[0]}`)[0].className = `node ${pos[0]} checked`
             if (isMate) {
                 socket.emit("lostGame", this.props.oppoId)
-                this.setState({ gameOver: true, gameOverMessage: "Match Lost!!" })
+                this.props.settingGameOver(true, "You Lost!");
                 simulateGameOverSound()
             }
         } else {
             // check for stalemate
             if (isMate) {
                 socket.emit("drawnGame", this.props.oppoId);
-                this.setState({ gameOver: true, gameOverMessage: "Match Drawn!!" })
+                this.props.settingGameOver(true, "Stalemate!");
             }
             return;
         }
@@ -176,7 +177,8 @@ export class GameInstance extends React.Component<Props> {
         const enpassant = this.state.enpassant;
         const { setEnpassant } = this;
         return (
-            <div className="game_instance_container">
+            <div className="game_instance_container"
+                style={this.props.gameOver ? { pointerEvents: "none" } : { pointerEvents: "all" }}>
                 <TurnContext.Provider value={{ yourTurn, setTurn }}>
                     <BoardContext.Provider value={{ board, setBoard }}>
                         <EnpassantContext.Provider value={{ enpassant, setEnpassant }}>
@@ -187,6 +189,7 @@ export class GameInstance extends React.Component<Props> {
                                 setUpgrade={this.setUpgrade}
                                 updatePieces={this.updatePieces}
                                 updateFallenPieces={this.updateFallenPieces}
+                                boardWidthHeight={this.props.boardWidthHeight}
                             />
                         </EnpassantContext.Provider>
                     </BoardContext.Provider>
@@ -202,4 +205,4 @@ export class GameInstance extends React.Component<Props> {
     }
 }
 
-export { FallenPiecesContext, TurnContext, BoardContext, EnpassantContext }
+export { TurnContext, BoardContext, EnpassantContext }

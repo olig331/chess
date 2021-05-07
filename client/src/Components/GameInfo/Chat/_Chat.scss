@@ -1,6 +1,5 @@
 .chat_container {
     width: 400px;
-    height: 500px;
     border: 2px solid #00b1b1;
     position: relative;
 
@@ -21,7 +20,7 @@
 
     .messages_display {
         width: 100%;
-        height: 400px;
+        height: calc(100% - 100px);
         overflow-y: scroll;
         //border: 2px solid black;
         padding: 10px;
