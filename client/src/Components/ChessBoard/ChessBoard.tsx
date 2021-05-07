@@ -16,14 +16,14 @@ const MovesContext: any = React.createContext([]);
 
 export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, color, setUpgrade, updatePieces, updateFallenPieces }) => {
 
-    const [moves, set_moves] = useState<MoveArr[]>([])
+    const [moves, set_moves] = useState<MoveArr[]>([]);
     const { board } = useContext(BoardContext);
     const { width, height } = useWindowDimensions();
     const [boardWidthHeight, set_boardWidthHeight] = useState<number>();
 
     useEffect(() => {
         if (width < height) {
-            if (width > 800) {
+            if (width > 1280) {
                 let val: number = Math.ceil(width / 2);
                 set_boardWidthHeight(val)
                 return
@@ -31,15 +31,15 @@ export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, co
                 set_boardWidthHeight(width)
             }
         } else {
-            if (width > 800) {
+            if (width > 1280) {
                 let val: number = Math.ceil(width / 2)
-                set_boardWidthHeight(val)
+                set_boardWidthHeight(val);
                 return
             }
             set_boardWidthHeight(height);
         }
         return
-    }, [width, height])
+    }, [width, height]);
 
 
     return (

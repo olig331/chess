@@ -29,11 +29,11 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
     const { board, setBoard } = useContext(BoardContext);
     const { enpassant } = useContext(EnpassantContext);
     const { width, height } = useWindowDimensions();
-    const [nodeWidthHeight, set_nodeWidthHeight] = useState<number>();
+    const [nodeWidthHeight, set_nodeWidthHeight] = useState<number>(0);
 
     useEffect(() => {
         if (width < height) {
-            if (width > 800) {
+            if (width > 1280) {
                 let val: number = width / 2
                 set_nodeWidthHeight(Math.floor(val / 8))
                 return
@@ -42,7 +42,7 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
                 return
             }
         } else {
-            if (width > 800) {
+            if (width > 1280) {
                 let val: number = Math.ceil(width / 2)
                 set_nodeWidthHeight(val / 8)
                 return
@@ -68,7 +68,7 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
     const handleMove = (e: SquareEvent, key: string, index: number): void => {
         if (yourTurn && getPieceColor(board[key]) === color) {
             set_dragActive("1"); // when the val is 1 the original piece will be hidden and the only the drag piece will be visiible
-            createDragImage(e); // Create the draggable image
+            createDragImage(e, nodeWidthHeight); // Create the draggable image
             const moves: MoveArr[] = getLegalMoves(board[key], Object.keys(board), board, index, castleSwapStatus, enpassant); // returns an array of all aquares we can move to
             moves && moves.forEach((move: MoveArr) => {
                 document.getElementsByClassName(`node ${move.effects[0].pos}`)[0].className = `node ${move.effects[0].pos} highlight`
