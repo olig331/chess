@@ -4,17 +4,4 @@
     display: flex;
     flex-direction: column;
     background-color: #999;
-    .player {
-        display: inline-flex;
-        position: relative;
-        margin: 10px 0px;
-    }
-
-    .fallen_pieces_imgs {
-        display: inline-flex;
-    }
-    .fallen_piece {
-        margin-left: 50px;
-        position: absolute;
-    }
 }

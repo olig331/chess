@@ -6,7 +6,6 @@ import { checkForCheck } from './GameFunctions/checkForCheck';
 import { PawnUpgrade } from './PawnUpgrade';
 import { getLegalMoves } from './GameFunctions/getLegalMoves';
 import { initBoard } from './initialBoard'
-import { GameInfo } from '../GameInfo/GameInfo';
 import { FallenPiecesContext } from '../../Context/Context';
 
 const socket = require('../../SocketConnection/Socket').socket;
@@ -197,11 +196,6 @@ export class GameInstance extends React.Component<Props> {
                     selectUpgradePiece={this.selectUpgradePiece}
                     color={this.props.color}
                     showUpgrade={this.state.upgrade}
-                />
-                <GameInfo
-                    oppoId={this.props.oppoId}
-                    color={this.props.color}
-                    fallenPieces={this.context.fallenPieces}
                 />
             </div>
         )

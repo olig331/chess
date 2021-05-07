@@ -16,26 +16,39 @@ interface PassedProps {
     oppoId: string;
     castleSwapStatus: CastleStatus;
     color: string;
-    setUpgrade: (val: boolean, move: MoveArr) => void
-    updatePieces: (move: MoveArr) => void
-    updateFallenPieces: (taking: Taking) => void
+    setUpgrade: (val: boolean, move: MoveArr) => void;
+    updatePieces: (move: MoveArr) => void;
+    updateFallenPieces: (taking: Taking) => void;
 }
 
 export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapStatus, color, setUpgrade, updatePieces, updateFallenPieces }) => {
 
     const [dragActive, set_dragActive] = useState<string>("0")
     const { moves, set_moves } = useContext(MovesContext);
-    const { yourTurn, setTurn } = useContext(TurnContext)
-    const { board, setBoard } = useContext(BoardContext)
+    const { yourTurn, setTurn } = useContext(TurnContext);
+    const { board, setBoard } = useContext(BoardContext);
     const { enpassant } = useContext(EnpassantContext);
     const { width, height } = useWindowDimensions();
     const [nodeWidthHeight, set_nodeWidthHeight] = useState<number>();
 
     useEffect(() => {
-        if (width > height) {
-            set_nodeWidthHeight(Math.floor(height / 8))
+        if (width < height) {
+            if (width > 800) {
+                let val: number = width / 2
+                set_nodeWidthHeight(Math.floor(val / 8))
+                return
+            } else {
+                set_nodeWidthHeight(Math.floor(width / 8));
+                return
+            }
         } else {
-            set_nodeWidthHeight(Math.floor(width / 8))
+            if (width > 800) {
+                let val: number = Math.ceil(width / 2)
+                set_nodeWidthHeight(val / 8)
+                return
+            }
+            set_nodeWidthHeight(Math.floor(height / 8))
+            return
         }
     }, [width, height])
 

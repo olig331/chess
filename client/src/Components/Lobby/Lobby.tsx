@@ -3,6 +3,8 @@ import { GameInstance } from '../GameInstance/GameInstance'
 import { GameOver } from '../GameOver/GameOver';
 import { simulateStartSound } from '../../HelperFunctions/triggerAudio';
 import { FallenPiecesContext } from '../../Context/Context';
+import { FallenPieces } from '../FallenPieces/FallenPieces';
+import { GameInfo } from '../GameInfo/GameInfo';
 
 const socket = require('../../SocketConnection/Socket').socket;
 
@@ -40,13 +42,24 @@ export const Lobby: React.FC<PassedProps> = (props) => {
 
             <div className="game_wrapper">
                 <FallenPiecesContext.Provider value={{ fallenPieces, setFallenPieces }}>
+                    <div className="opponent player">
+                        <FallenPieces
+                            pieces={color === "white" ? fallenPieces.black : fallenPieces.white}
+                        />
+                    </div>
                     {color && <GameInstance
                         color={color}
                         oppoId={oppoId}
                     />}
+                    <div className="you player">
+                        <FallenPieces
+                            pieces={color === "white" ? fallenPieces.white : fallenPieces.black}
+                        />
+                    </div>
                 </FallenPiecesContext.Provider>
             </div>
             <GameOver />
+            <GameInfo oppoId={oppoId} />
         </div>
     )
 }

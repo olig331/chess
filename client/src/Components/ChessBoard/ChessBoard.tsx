@@ -22,20 +22,32 @@ export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, co
     const [boardWidthHeight, set_boardWidthHeight] = useState<number>();
 
     useEffect(() => {
-        if (height < width) {
-            set_boardWidthHeight(height)
+        if (width < height) {
+            if (width > 800) {
+                let val: number = Math.ceil(width / 2);
+                set_boardWidthHeight(val)
+                return
+            } else {
+                set_boardWidthHeight(width)
+            }
         } else {
-            set_boardWidthHeight(width)
+            if (width > 800) {
+                let val: number = Math.ceil(width / 2)
+                set_boardWidthHeight(val)
+                return
+            }
+            set_boardWidthHeight(height);
         }
         return
     }, [width, height])
+
 
     return (
         <div
             className="board_wrapper"
             style={color === "black"
-                ? { transform: "rotate(180deg)", width: `${boardWidthHeight}px`, height: `${boardWidthHeight}px` }
-                : { transform: "rotate(0deg)", width: `${boardWidthHeight}px`, height: `${boardWidthHeight}px` }}
+                ? { transform: "rotate(180deg)", width: `${boardWidthHeight}px` }
+                : { transform: "rotate(0deg)", width: `${boardWidthHeight}px` }}
         >
             {Object.keys(board).map((key: string, index: number) => (
                 <React.Fragment key={index}>
