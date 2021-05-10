@@ -5,13 +5,13 @@ import { Chat } from './Chat/Chat'
 interface PassedProps {
     oppoId: string;
     boardWidthHeight: number
+    settingGameOver: (status: boolean, message: string) => void
 }
 
-export const GameInfo: React.FC<PassedProps> = ({ oppoId, boardWidthHeight }) => {
-
+export const GameInfo: React.FC<PassedProps> = ({ oppoId, boardWidthHeight, settingGameOver }) => {
     const handleSurrendor = () => {
         socket.emit("lostTheMatch", oppoId);
-
+        settingGameOver(true, "You Lost!")
     }
 
     return (

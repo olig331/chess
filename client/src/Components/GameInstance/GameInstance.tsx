@@ -7,6 +7,7 @@ import { PawnUpgrade } from './PawnUpgrade';
 import { getLegalMoves } from './GameFunctions/getLegalMoves';
 import { initBoard } from './initialBoard'
 import { FallenPiecesContext } from '../../Context/Context';
+import { BoardTint } from './BoardTint';
 
 const socket = require('../../SocketConnection/Socket').socket;
 
@@ -169,6 +170,15 @@ export class GameInstance extends React.Component<Props> {
         this.setState({ upgrade: val, upgradeData: move });
     }
 
+    public changeCastleStatus = (updates: string[]): void => {
+        let castleCopy: CastleStatus = { ...this.state.castleSwapStatus }
+        updates.forEach((key: string) => {
+            castleCopy[`${key}`] = false
+        })
+        this.setState({ castleSwapStatus: castleCopy })
+        return;
+    };
+
     render() {
         const yourTurn = this.state.yourTurn;
         const { setTurn } = this;
@@ -179,6 +189,7 @@ export class GameInstance extends React.Component<Props> {
         return (
             <div className="game_instance_container"
                 style={this.props.gameOver ? { pointerEvents: "none" } : { pointerEvents: "all" }}>
+                <BoardTint boardWidthHeight={this.props.boardWidthHeight} gameOver={this.props.gameOver} />
                 <TurnContext.Provider value={{ yourTurn, setTurn }}>
                     <BoardContext.Provider value={{ board, setBoard }}>
                         <EnpassantContext.Provider value={{ enpassant, setEnpassant }}>
@@ -190,6 +201,7 @@ export class GameInstance extends React.Component<Props> {
                                 updatePieces={this.updatePieces}
                                 updateFallenPieces={this.updateFallenPieces}
                                 boardWidthHeight={this.props.boardWidthHeight}
+                                changeCastleStatus={this.changeCastleStatus}
                             />
                         </EnpassantContext.Provider>
                     </BoardContext.Provider>

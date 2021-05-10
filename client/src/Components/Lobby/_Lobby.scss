@@ -17,6 +17,7 @@
         align-items: center;
         font-size: 22px;
         margin-top: 5px;
+        z-index: 10000;
         span {
             color: #00b1b1;
             margin-right: 5px;
@@ -156,14 +157,26 @@
     position: absolute;
     top: 0;
     left: 50%;
-    transform: translateX(-50%) translateY(-300px);
+    transform: translateX(-50%) translateY(-50px);
     width: 200px;
     background-color: rgb(80, 175, 80);
     padding: 10px 0px;
     display: flex;
     justify-content: center;
     align-items: center;
-    animation: popUp 0.75s ease-in-out forwards;
+    animation: popUp 0.35s ease-out forwards;
+}
+
+.board_tint {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10000;
+    background-color: rgba(41, 41, 41, 0.479);
+    border: 2px solid salmon;
+    max-width: 1000px;
+    max-height: 1000px;
 }
 
 @keyframes popUp {

@@ -110,7 +110,13 @@ export const Lobby: React.FC<PassedProps> = (props) => {
                         gameOverMessage={gameOverMessage}
                         settingGameOver={settingGameOver}
                     />
-                    <div className="chat"><GameInfo oppoId={oppoId} boardWidthHeight={boardWidthHeight} /></div>
+                    <div className="chat">
+                        <GameInfo
+                            oppoId={oppoId}
+                            boardWidthHeight={boardWidthHeight}
+                            settingGameOver={settingGameOver}
+                        />
+                    </div>
                 </>}
             <div className="image_block"></div>
         </div >

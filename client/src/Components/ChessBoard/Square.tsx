@@ -19,9 +19,10 @@ interface PassedProps {
     setUpgrade: (val: boolean, move: MoveArr) => void;
     updatePieces: (move: MoveArr) => void;
     updateFallenPieces: (taking: Taking) => void;
+    changeCastleStatus: (updates: string[]) => void;
 }
 
-export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapStatus, color, setUpgrade, updatePieces, updateFallenPieces }) => {
+export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapStatus, color, setUpgrade, updatePieces, updateFallenPieces, changeCastleStatus }) => {
 
     const [dragActive, set_dragActive] = useState<string>("0")
     const { moves, set_moves } = useContext(MovesContext);
@@ -90,6 +91,20 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
                 removeHighlights();
                 return;
             }
+            if (move && move.effects[0].piece.toLowerCase() === "k") {
+                // update castle swap to be false on all accounts
+                changeCastleStatus(["qside", "kside"]);
+            }
+            if (move && move.effects[0].piece.toLowerCase() === "r") {
+                // update castle swap relative to side of rook
+                const pos: string = move.effects[1].pos;
+                if (pos === "h1" || pos === "h8") {
+                    changeCastleStatus(["qside"])
+                }
+                if (pos === "a8" || pos === "a1") {
+                    changeCastleStatus(["kside"])
+                }
+            }
             if (possible.length > 0) {
                 let copy: Board = { ...board };
                 for (let i: number = 0; i < move.effects.length; i++) {
@@ -125,6 +140,7 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
             onDragLeave={(e: SquareEvent) => handleDragLeave(e)}
             onDragStart={(e: SquareEvent) => handleMove(e, pos, index)}
             onDragEnd={() => set_dragActive("0")}
+            onClick={() => console.log(index)}
             key={index}
             style={color === "black"
                 ? {

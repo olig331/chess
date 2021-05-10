@@ -4,7 +4,7 @@ const socket = require('../../../SocketConnection/Socket').socket
 
 interface PassedProps {
     oppoId: string;
-    boardWidthHeight: number
+    boardWidthHeight: number;
 };
 
 export const Chat: React.FC<PassedProps> = ({ oppoId, boardWidthHeight }) => {
@@ -16,15 +16,9 @@ export const Chat: React.FC<PassedProps> = ({ oppoId, boardWidthHeight }) => {
         set_message(e.currentTarget.value)
     }
 
-    useEffect(() => {
-        console.log(messageHistory)
-    }, [messageHistory])
-
     const sendMessage = (e: React.FormEvent<HTMLButtonElement>): void => {
         e.preventDefault()
-        console.log(message.split("").length, message.split(""))
         if (message.split("").length > 1) {
-            console.log("sending message")
             socket.emit("sendingChatMessage", { id: oppoId, message: message });
             const newMessage = <li className="your_messaage message"><span className="text">{message}</span></li>
             set_messageHistory(prev => [...prev, newMessage]);
@@ -55,9 +49,19 @@ export const Chat: React.FC<PassedProps> = ({ oppoId, boardWidthHeight }) => {
     }
 
     return (
-        <div className="chat_container" style={{ height: "calc(100% - 58px)" }}>
-            <span title="clear chat" className="clear_chat" onClick={clearChat}><AiFillCloseCircle /></span>
-            <div className="messages_display">
+        <div
+            className="chat_container"
+            style={{ height: "calc(100% - 58px)", maxHeight: "550px" }}>
+            <span
+                title="clear chat"
+                className="clear_chat"
+                onClick={clearChat}>
+                <AiFillCloseCircle />
+            </span>
+            <div
+                id="messages_display"
+                className="messages_display"
+            >
                 <ul>
                     {messageHistory.map((message: HTMLLIElement, index: number) => (
                         <React.Fragment key={index}>

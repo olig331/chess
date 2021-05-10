@@ -9,12 +9,13 @@ interface PassedProps {
     setUpgrade: (val: boolean, move: MoveArr) => void
     updatePieces: (move: MoveArr) => void;
     updateFallenPieces: (taking: Taking) => void;
-    boardWidthHeight: number
+    boardWidthHeight: number;
+    changeCastleStatus: (updates: string[]) => void
 };
 
 const MovesContext: any = React.createContext([]);
 
-export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, color, setUpgrade, updatePieces, updateFallenPieces, boardWidthHeight }) => {
+export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, color, setUpgrade, updatePieces, updateFallenPieces, boardWidthHeight, changeCastleStatus }) => {
 
     const [moves, set_moves] = useState<MoveArr[]>([]);
     const { board } = useContext(BoardContext);
@@ -38,6 +39,7 @@ export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, co
                             setUpgrade={setUpgrade}
                             updatePieces={updatePieces}
                             updateFallenPieces={updateFallenPieces}
+                            changeCastleStatus={changeCastleStatus}
                         />
                     </MovesContext.Provider>
                 </React.Fragment>
