@@ -23,6 +23,7 @@ type MovePayload = {
     newBoard: Board;
     enpassant: string;
     taking: Taking;
+    move: string;
 };
 
 type SetUpData = { [key: string]: string };

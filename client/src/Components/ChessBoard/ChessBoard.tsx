@@ -11,11 +11,12 @@ interface PassedProps {
     updateFallenPieces: (taking: Taking) => void;
     boardWidthHeight: number;
     changeCastleStatus: (updates: string[]) => void
+    calcAndSetMoveForHistory: (data: MoveArr) => string;
 };
 
 const MovesContext: any = React.createContext([]);
 
-export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, color, setUpgrade, updatePieces, updateFallenPieces, boardWidthHeight, changeCastleStatus }) => {
+export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, color, setUpgrade, updatePieces, updateFallenPieces, boardWidthHeight, changeCastleStatus, calcAndSetMoveForHistory }) => {
 
     const [moves, set_moves] = useState<MoveArr[]>([]);
     const { board } = useContext(BoardContext);
@@ -40,6 +41,7 @@ export const ChessBoard: React.FC<PassedProps> = ({ oppoId, castleSwapStatus, co
                             updatePieces={updatePieces}
                             updateFallenPieces={updateFallenPieces}
                             changeCastleStatus={changeCastleStatus}
+                            calcAndSetMoveForHistory={calcAndSetMoveForHistory}
                         />
                     </MovesContext.Provider>
                 </React.Fragment>

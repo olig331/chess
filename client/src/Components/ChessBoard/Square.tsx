@@ -20,9 +20,10 @@ interface PassedProps {
     updatePieces: (move: MoveArr) => void;
     updateFallenPieces: (taking: Taking) => void;
     changeCastleStatus: (updates: string[]) => void;
+    calcAndSetMoveForHistory: (data: MoveArr) => string;
 }
 
-export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapStatus, color, setUpgrade, updatePieces, updateFallenPieces, changeCastleStatus }) => {
+export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapStatus, color, setUpgrade, updatePieces, updateFallenPieces, changeCastleStatus, calcAndSetMoveForHistory }) => {
 
     const [dragActive, set_dragActive] = useState<string>("0")
     const { moves, set_moves } = useContext(MovesContext);
@@ -124,7 +125,8 @@ export const Square: React.FC<PassedProps> = ({ pos, index, oppoId, castleSwapSt
                 } else {
                     simulateMoveSound()
                 }
-                socket.emit("sendMove", JSON.stringify({ oppoId: oppoId, data: copy, enpassant: enpassantData, taking: move.taking }));
+                let moveString: string = calcAndSetMoveForHistory(move);
+                socket.emit("sendMove", JSON.stringify({ oppoId: oppoId, data: copy, enpassant: enpassantData, taking: move.taking, move: moveString }));
                 setTurn(false)
             }
         }

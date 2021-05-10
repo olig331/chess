@@ -21,6 +21,8 @@ interface Props {
     boardWidthHeight: number;
     gameOver: boolean;
     settingGameOver: (status: boolean, message: string) => void;
+    calcAndSetMoveForHistory: (data: MoveArr) => string;
+    addToMoveHistory: (move: string) => void
 }
 
 export class GameInstance extends React.Component<Props> {
@@ -43,6 +45,7 @@ export class GameInstance extends React.Component<Props> {
 
         socket.on("recieveMove", (payload: string): void => {
             const data: MovePayload = JSON.parse(payload);
+            this.props.addToMoveHistory(data.move)
             this.updatePiecesOnReciveMove(data.taking)
             this.setBoard(data.newBoard);
             this.setEnpassant(data.enpassant)
@@ -89,7 +92,8 @@ export class GameInstance extends React.Component<Props> {
 
     public handleRecieveMove = (): void => {
         const amIChecked: boolean = checkForCheck(this.state.board, this.props.color);
-        const isMate: boolean = this.checkForMate()
+        const isMate: boolean = this.checkForMate();
+
         if (amIChecked) {
             const kingTag: string = this.props.color === "white" ? "K" : "k"
             let pos: string[] = Object.keys(this.state.board).filter((key: string) => this.state.board[key] === kingTag);
@@ -132,7 +136,6 @@ export class GameInstance extends React.Component<Props> {
                 fallenPiecesCopy.black.push(taking.piece);
             }
         }
-        console.log("copy in update fallen pieces", fallenPiecesCopy);
         this.context.setFallenPieces(fallenPiecesCopy)
         return;
     };
@@ -202,6 +205,7 @@ export class GameInstance extends React.Component<Props> {
                                 updateFallenPieces={this.updateFallenPieces}
                                 boardWidthHeight={this.props.boardWidthHeight}
                                 changeCastleStatus={this.changeCastleStatus}
+                                calcAndSetMoveForHistory={this.props.calcAndSetMoveForHistory}
                             />
                         </EnpassantContext.Provider>
                     </BoardContext.Provider>

@@ -43,7 +43,7 @@ io.on("connection", socket => {
 
     socket.on("sendMove", payload => {
         const parsedData = JSON.parse(payload)
-        io.to(parsedData.oppoId).emit("recieveMove", JSON.stringify({ newBoard: parsedData.data, enpassant: parsedData.enpassant, taking: parsedData.taking }));
+        io.to(parsedData.oppoId).emit("recieveMove", JSON.stringify({ newBoard: parsedData.data, enpassant: parsedData.enpassant, taking: parsedData.taking, move: parsedData.move }));
     });
 
     socket.on("lostTheMatch", id => {

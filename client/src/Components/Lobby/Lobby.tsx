@@ -9,6 +9,7 @@ import { FaChessKing } from 'react-icons/fa';
 import useWindowDimensions from '../../CustomHooks/WIndowDimensions';
 import { WaitingForConnection } from './WaitingForConnection';
 import { LobbyID } from './LobbyID';
+import { MoveHistory } from '../MoveHistory/MoveHistory';
 
 const socket = require('../../SocketConnection/Socket').socket;
 
@@ -21,14 +22,41 @@ const OppoIdContext: any = React.createContext("");
 
 export const Lobby: React.FC<PassedProps> = (props) => {
 
+    const { width, height } = useWindowDimensions();
+
     const [lobbyId, set_lobbyId] = useState<string>("");
     const [oppoId, setOppodId] = useState<string>("");
     const [color, setColor] = useState<string>("");
-    const [fallenPieces, setFallenPieces] = useState<FallenPieces>({ "white": [], "black": [] });
-    const { width, height } = useWindowDimensions()
+    const [fallenPieces, setFallenPieces] = useState<FallenPieces>({ "white": [], "black": [] })
     const [boardWidthHeight, set_boardWidthHeight] = useState<number>(0);
     const [gameOver, set_gameOver] = useState<boolean>(false);
     const [gameOverMessage, setGamOverMessage] = useState<string>("");
+    const [moveHistory, set_moveHistory] = useState<string[]>([]);
+
+    const addToMoveHistory = (move: string) => {
+        set_moveHistory(prev => [...prev, move])
+    }
+
+    const setMoveHistory = (data: MoveArr): string => {
+        console.log("data in setMoveHGistory", data)
+        if (data.effects.length === 4) { // castle-swap
+            if (data.effects[0].pos[0] === "c") {
+                set_moveHistory(prev => [...prev, "0-0-0"])
+                return "0-0-0"
+            } else {
+                set_moveHistory(prev => [...prev, "0-0"]);
+                return "0-0"
+            }
+
+        }
+        let result: string = data.effects[0].piece;
+        if (data.taking.piece) {
+            result += "x";
+        }
+        result += data.effects[0].pos
+        set_moveHistory(prev => [...prev, result]);
+        return result
+    }
 
     useEffect(() => {
         socket.emit("joinedLobby", props.match.params.lobbyId);
@@ -69,7 +97,9 @@ export const Lobby: React.FC<PassedProps> = (props) => {
         return
     }, [width, height]);
 
-
+    useEffect(() => {
+        console.log("this is move history", moveHistory)
+    }, [moveHistory])
 
     return (
         <div className="lobby_container">
@@ -94,6 +124,8 @@ export const Lobby: React.FC<PassedProps> = (props) => {
                                 boardWidthHeight={boardWidthHeight}
                                 gameOver={gameOver}
                                 settingGameOver={settingGameOver}
+                                calcAndSetMoveForHistory={setMoveHistory}
+                                addToMoveHistory={addToMoveHistory}
                             />}
                         </div>
                         <div className="you player">
@@ -117,6 +149,9 @@ export const Lobby: React.FC<PassedProps> = (props) => {
                             settingGameOver={settingGameOver}
                         />
                     </div>
+                    <MoveHistory
+                        moves={moveHistory}
+                    />
                 </>}
             <div className="image_block"></div>
         </div >
